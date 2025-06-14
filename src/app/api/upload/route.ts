@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     // Get the form data
     const formData = await req.formData();
     const file = formData.get("file") as File;
-    const folder = (formData.get("folder") as string) || "vbtix";
+    const folder = (formData.get("folder") as string) || "vbticket";
 
     if (!file) {
       return NextResponse.json(

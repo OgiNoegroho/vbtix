@@ -53,6 +53,19 @@ export async function GET(
   } catch (error: any) {
     console.error(`Error fetching event:`, error);
 
+    // Handle database connectivity errors
+    if (error.code === 'P1001' || error.code === 'P1017') {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Database connection error",
+          details: "Unable to connect to database. Please try again later.",
+          code: error.code
+        },
+        { status: 503 },
+      );
+    }
+
     // Handle specific errors
     if (error.message === "Event not found") {
       return NextResponse.json(
@@ -66,6 +79,16 @@ export async function GET(
         {
           success: false,
           error: "You don't have permission to access this event",
+        },
+        { status: 403 },
+      );
+    }
+
+    if (error.message === "User is not an organizer") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "User is not an organizer",
         },
         { status: 403 },
       );

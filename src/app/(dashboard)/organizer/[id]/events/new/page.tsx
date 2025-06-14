@@ -24,6 +24,7 @@ import {
   Save,
   ImageIcon,
   ShieldAlert,
+  AlertTriangle,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,6 +48,7 @@ import { ORGANIZER_ENDPOINTS } from "~/lib/api/endpoints";
 import { ImagePreviewGallery } from "~/components/ui/image-preview-gallery";
 import { useOrganizerSettings } from "~/lib/api/hooks/organizer";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { MagicCard, MagicInput, MagicTextarea } from "~/components/ui/magic-card";
 
 // Create a schema for event creation
 const createEventSchema = z.object({
@@ -81,17 +83,8 @@ export default function CreateEventPage() {
   const { settings, isLoading: isLoadingSettings } =
     useOrganizerSettings(organizerId);
 
-  // Check if organizer is verified and redirect if not
-  useEffect(() => {
-    if (settings && !settings.verified) {
-      // Redirect to verification page after a short delay
-      const timer = setTimeout(() => {
-        router.push(`/organizer/${organizerId}/verification`);
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [settings, organizerId, router]);
+  // Note: Removed verification redirect - unverified organizers can create events
+  // but they will require admin approval before publication
 
   // State for image uploads
   const [isUploading, setIsUploading] = useState(false);
@@ -149,6 +142,15 @@ export default function CreateEventPage() {
       imagePublicIds: [],
     },
   });
+
+  // Debug: Add click handler untuk memastikan focus bekerja
+  const handleInputFocus = (fieldName: string) => {
+    console.log(`Focus on field: ${fieldName}`);
+  };
+
+  const handleInputClick = (fieldName: string) => {
+    console.log(`Click on field: ${fieldName}`);
+  };
 
   // Handle form submission
   const onSubmit = async (data: CreateEventFormValues) => {
@@ -255,24 +257,35 @@ export default function CreateEventPage() {
             <CardHeader>
               <CardTitle>Event Details</CardTitle>
               <CardDescription>
-                Fill in the details for your new event
+                Fill in the details for your new event. All events require admin approval before publication.
               </CardDescription>
+              <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
+                  <div>
+                    <h4 className="font-medium text-amber-800">Approval Required</h4>
+                    <p className="text-sm text-amber-700 mt-1">
+                      Your event will be saved as a draft and must be submitted for admin approval before it becomes visible to the public.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               {settings && !settings.verified && (
-                <Alert className="mb-6 border-red-200 bg-red-50">
-                  <ShieldAlert className="h-4 w-4 text-red-600" />
-                  <AlertTitle className="text-red-800">
+                <Alert className="mb-6 border-blue-200 bg-blue-50">
+                  <ShieldAlert className="h-4 w-4 text-blue-600" />
+                  <AlertTitle className="text-blue-800">
                     Account Not Verified
                   </AlertTitle>
-                  <AlertDescription className="text-red-700">
+                  <AlertDescription className="text-blue-700">
                     <p className="mb-2">
-                      Your organizer account is not verified. You will be
-                      redirected to the verification page.
+                      Your organizer account is not verified. You can still create events,
+                      but they will require admin approval before publication.
                     </p>
                     <Button
                       variant="outline"
-                      className="mt-2 border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      className="mt-2 border-blue-500 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
                       onClick={() =>
                         router.push(`/organizer/${organizerId}/verification`)
                       }
@@ -305,61 +318,31 @@ export default function CreateEventPage() {
                 </div>
               )}
 
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-6"
-                >
-                  <div className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Event Title</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter event title" {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            The name of your event as it will appear to
-                            attendees
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Describe your event"
-                              className="min-h-32"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Provide details about your event
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <MagicCard className="p-6 bg-gradient-to-br from-card/90 to-muted/20 backdrop-blur-sm border-border/50">
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-6"
+                  >
+                    <div className="space-y-4">
                       <FormField
                         control={form.control}
-                        name="startDate"
+                        name="title"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Start Date & Time</FormLabel>
+                            <FormLabel>Event Title</FormLabel>
                             <FormControl>
-                              <Input type="datetime-local" {...field} />
+                              <MagicInput
+                                placeholder="Enter event title"
+                                {...field}
+                                onFocus={() => handleInputFocus("title")}
+                                onClick={() => handleInputClick("title")}
+                              />
                             </FormControl>
+                            <FormDescription>
+                              The name of your event as it will appear to
+                              attendees
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -367,92 +350,165 @@ export default function CreateEventPage() {
 
                       <FormField
                         control={form.control}
-                        name="endDate"
+                        name="description"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>End Date & Time</FormLabel>
+                            <FormLabel>Description</FormLabel>
                             <FormControl>
-                              <Input type="datetime-local" {...field} />
+                              <MagicTextarea
+                                placeholder="Describe your event"
+                                className="min-h-32"
+                                {...field}
+                                onFocus={() => handleInputFocus("description")}
+                                onClick={() => handleInputClick("description")}
+                              />
                             </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name="venue"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Venue</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter venue name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                      <FormField
-                        control={form.control}
-                        name="address"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Address</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Enter address" {...field} />
-                            </FormControl>
+                            <FormDescription>
+                              Provide details about your event
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
 
-                      <FormField
-                        control={form.control}
-                        name="city"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>City</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Enter city" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <FormField
+                          control={form.control}
+                          name="startDate"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Start Date & Time</FormLabel>
+                              <FormControl>
+                                <MagicInput
+                                  type="datetime-local"
+                                  {...field}
+                                  onFocus={() => handleInputFocus("startDate")}
+                                  onClick={() => handleInputClick("startDate")}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
 
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                      <FormField
-                        control={form.control}
-                        name="province"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Province</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Enter province" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                        <FormField
+                          control={form.control}
+                          name="endDate"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>End Date & Time</FormLabel>
+                              <FormControl>
+                                <MagicInput
+                                  type="datetime-local"
+                                  {...field}
+                                  onFocus={() => handleInputFocus("endDate")}
+                                  onClick={() => handleInputClick("endDate")}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
 
                       <FormField
                         control={form.control}
-                        name="country"
+                        name="venue"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Country</FormLabel>
+                            <FormLabel>Venue</FormLabel>
                             <FormControl>
-                              <Input placeholder="Enter country" {...field} />
+                              <MagicInput
+                                placeholder="Enter venue name"
+                                {...field}
+                                onFocus={() => handleInputFocus("venue")}
+                                onClick={() => handleInputClick("venue")}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                    </div>
+
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <FormField
+                          control={form.control}
+                          name="address"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Address</FormLabel>
+                              <FormControl>
+                                <MagicInput
+                                  placeholder="Enter address"
+                                  {...field}
+                                  onFocus={() => handleInputFocus("address")}
+                                  onClick={() => handleInputClick("address")}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="city"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>City</FormLabel>
+                              <FormControl>
+                                <MagicInput
+                                  placeholder="Enter city"
+                                  {...field}
+                                  onFocus={() => handleInputFocus("city")}
+                                  onClick={() => handleInputClick("city")}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <FormField
+                          control={form.control}
+                          name="province"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Province</FormLabel>
+                              <FormControl>
+                                <MagicInput
+                                  placeholder="Enter province"
+                                  {...field}
+                                  onFocus={() => handleInputFocus("province")}
+                                  onClick={() => handleInputClick("province")}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="country"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Country</FormLabel>
+                              <FormControl>
+                                <MagicInput
+                                  placeholder="Enter country"
+                                  {...field}
+                                  onFocus={() => handleInputFocus("country")}
+                                  onClick={() => handleInputClick("country")}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
 
                     <FormField
                       control={form.control}
@@ -464,6 +520,8 @@ export default function CreateEventPage() {
                             <Input
                               placeholder="Enter event category"
                               {...field}
+                              onFocus={() => handleInputFocus("category")}
+                              onClick={() => handleInputClick("category")}
                             />
                           </FormControl>
                           <FormDescription>
@@ -567,14 +625,8 @@ export default function CreateEventPage() {
                     </Button>
                     <Button
                       type="submit"
-                      disabled={
-                        isSubmitting || (settings && !settings.verified)
-                      }
-                      title={
-                        settings && !settings.verified
-                          ? "Your account must be verified to create events"
-                          : ""
-                      }
+                      disabled={isSubmitting}
+                      title=""
                     >
                       {isSubmitting ? (
                         <>
@@ -586,13 +638,14 @@ export default function CreateEventPage() {
                       ) : (
                         <>
                           <Save className="mr-2 h-4 w-4" />
-                          Create Event
+                          Save as Draft
                         </>
                       )}
                     </Button>
-                  </div>
-                </form>
-              </Form>
+                    </div>
+                  </form>
+                </Form>
+              </MagicCard>
             </CardContent>
           </Card>
         </div>

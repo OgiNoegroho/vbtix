@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import { useIsMobile } from "~/lib/hooks/use-mobile";
+import { MagicCard } from "~/components/ui/magic-card";
 import {
   Card,
   CardContent,
@@ -79,23 +80,29 @@ export function ChartAreaInteractive() {
       label: "Revenue",
     },
   };
-
   return (
-    <Card className="@container/card">
-      <CardHeader className="relative">
-        <CardTitle>Sales Overview</CardTitle>
-        <CardDescription>
-          <span className="hidden @[540px]/card:block">
-            {timeRange === "7d"
-              ? "Last 7 days"
-              : timeRange === "30d"
-                ? "Last 30 days"
-                : "Last 3 months"}
-          </span>
-          <span className="@[540px]/card:hidden">
-            {timeRange === "7d" ? "7d" : timeRange === "30d" ? "30d" : "90d"}
-          </span>
-        </CardDescription>
+    <MagicCard 
+      className="border-0 bg-background/50 backdrop-blur-sm shadow-xl"
+      gradientColor="rgba(34, 197, 94, 0.1)"
+    >
+      <CardHeader className="relative pb-6">
+        <div className="space-y-2">
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+            Ringkasan Penjualan
+          </CardTitle>
+          <CardDescription className="text-base">
+            <span className="hidden @[540px]/card:block">
+              {timeRange === "7d"
+                ? "7 hari terakhir"
+                : timeRange === "30d"
+                  ? "30 hari terakhir"
+                  : "3 bulan terakhir"}
+            </span>
+            <span className="@[540px]/card:hidden">
+              {timeRange === "7d" ? "7h" : timeRange === "30d" ? "30h" : "3bl"}
+            </span>
+          </CardDescription>
+        </div>
         <div className="absolute top-4 right-4">
           <ToggleGroup
             type="single"
@@ -214,13 +221,12 @@ export function ChartAreaInteractive() {
                   dataKey="revenue"
                   type="natural"
                   fill="url(#fillRevenue)"
-                  stroke="var(--color-revenue)"
-                />
+                  stroke="var(--color-revenue)"                />
               )}
             </AreaChart>
           </ChartContainer>
         </div>
       </CardContent>
-    </Card>
+    </MagicCard>
   );
 }

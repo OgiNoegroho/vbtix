@@ -1,5 +1,5 @@
 import { prisma } from "~/server/db";
-import { Prisma, TicketStatus } from "@prisma/client";
+import { Prisma, TicketStatus, EventStatus } from "@prisma/client";
 
 export const ticketService = {
   /**
@@ -383,6 +383,92 @@ export const ticketService = {
       return salesData;
     } catch (error) {
       console.error("Error getting ticket sales stats by event ID:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Validate if an event is approved for ticket creation
+   * Only PUBLISHED events can have tickets created
+   */
+  async validateEventApprovalForTickets(eventId: string, organizerId: string) {
+    try {
+      const event = await prisma.event.findUnique({
+        where: { id: eventId },
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          organizerId: true,
+        },
+      });
+
+      if (!event) {
+        throw new Error("Event not found");
+      }
+
+      if (event.organizerId !== organizerId) {
+        throw new Error("Event does not belong to this organizer");
+      }
+
+      if (event.status !== EventStatus.PUBLISHED) {
+        const statusMessages = {
+          [EventStatus.DRAFT]: "Event is still in draft status. Please submit for review first.",
+          [EventStatus.PENDING_REVIEW]: "Event is pending admin approval. Tickets can only be created after approval.",
+          [EventStatus.REJECTED]: "Event has been rejected. Please contact admin for more information.",
+          [EventStatus.COMPLETED]: "Event has already been completed. Cannot create new tickets.",
+          [EventStatus.CANCELLED]: "Event has been cancelled. Cannot create new tickets."
+        };
+
+        const message = statusMessages[event.status] ||
+                       "Event must be approved before tickets can be created.";
+        throw new Error(message);
+      }
+
+      return {
+        isApproved: true,
+        event: {
+          id: event.id,
+          title: event.title,
+          status: event.status,
+        },
+      };
+    } catch (error) {
+      console.error("Error validating event approval for tickets:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get organizer's approved events that can have tickets created
+   */
+  async getApprovedEventsForOrganizer(organizerId: string) {
+    try {
+      return await prisma.event.findMany({
+        where: {
+          organizerId,
+          status: EventStatus.PUBLISHED,
+        },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          startDate: true,
+          endDate: true,
+          venue: true,
+          status: true,
+          _count: {
+            select: {
+              ticketTypes: true,
+            },
+          },
+        },
+        orderBy: {
+          startDate: "asc",
+        },
+      });
+    } catch (error) {
+      console.error("Error getting approved events for organizer:", error);
       throw error;
     }
   },

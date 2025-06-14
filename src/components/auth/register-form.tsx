@@ -6,16 +6,9 @@ import Link from "next/link";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, User, Mail, Lock, Building, Phone, FileText, Sparkles } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { useAuth } from "~/lib/hooks/use-auth";
@@ -124,64 +117,74 @@ export function RegisterForm({
   };
 
   return (
-    <div className={cn("flex flex-col", className)} {...props}>
-      <Card className="overflow-hidden border-none bg-white shadow-lg">
-        <CardHeader className="border-b border-blue-50 bg-gradient-to-r from-blue-800 to-blue-700 pt-5 pb-4">
-          <CardTitle className="text-center text-lg font-bold text-white">
-            Daftar sebagai Organizer
-          </CardTitle>
-          <CardDescription className="text-center text-xs text-blue-100">
-            Bergabung sebagai organizer event di VBTix
-          </CardDescription>
-        </CardHeader>
+    <div className={cn("w-full max-w-sm", className)} {...props}>
+      <div className="w-full space-y-4">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <h2 className="text-xl font-bold tracking-tight">
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Bergabung sebagai Organizer
+            </span>
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Mulai perjalanan Anda di VBTicket
+          </p>
+        </div>
 
-        <CardContent className="px-5 pt-5">
-          {error && (
-            <div className="mb-3 rounded-md bg-red-50 p-2 text-xs text-red-600">
-              <div className="flex">
-                <svg
-                  className="mr-1.5 h-3.5 w-3.5 flex-shrink-0"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                {error}
-              </div>
+        {/* Error Message */}
+        {error && (
+          <div className="rounded-md bg-destructive/10 border border-destructive/20 p-2 text-xs text-destructive">
+            <div className="flex items-center gap-2">
+              <svg
+                className="h-3 w-3 flex-shrink-0 text-destructive"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span>{error}</span>
             </div>
-          )}
+          </div>
+        )}
 
-          {success && (
-            <div className="mb-3 rounded-md bg-green-50 p-2 text-xs text-green-600">
-              <div className="flex">
-                <svg
-                  className="mr-1.5 h-3.5 w-3.5 flex-shrink-0"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                {success}
-              </div>
+        {/* Success Message */}
+        {success && (
+          <div className="rounded-md bg-green-50 border border-green-200 p-2 text-xs text-green-700">
+            <div className="flex items-center gap-2">
+              <svg
+                className="h-3 w-3 flex-shrink-0 text-green-600"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span>{success}</span>
             </div>
-          )}
+          </div>
+        )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+        {/* Register Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+          <div className="space-y-3">
+            {/* Personal Information */}
             <div className="space-y-2">
+              <h3 className="text-xs font-medium text-foreground/80 border-b border-border/20 pb-1">
+                Informasi Personal
+              </h3>
+              
+              {/* Name Field */}
               <div className="space-y-1">
-                <Label
-                  htmlFor="name"
-                  className="text-xs font-medium text-gray-700"
-                >
-                  Nama
+                <Label htmlFor="name" className="text-xs font-medium text-foreground flex items-center gap-1">
+                  <User className="h-3 w-3 text-primary" />
+                  Nama Lengkap
                 </Label>
                 <Input
                   id="name"
@@ -189,21 +192,23 @@ export function RegisterForm({
                   placeholder="Nama Lengkap"
                   autoComplete="name"
                   disabled={isLoading}
-                  className="h-7 w-full rounded-md border-gray-200 bg-white px-2 text-xs shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                  className="h-8 w-full border border-border bg-background px-2 text-xs placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors rounded-md"
                   {...register("name")}
                 />
                 {errors.name && (
-                  <p className="text-xs font-medium text-red-500">
+                  <p className="text-[10px] text-destructive flex items-center gap-1">
+                    <svg className="h-2 w-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
                     {errors.name.message}
                   </p>
                 )}
               </div>
 
+              {/* Email Field */}
               <div className="space-y-1">
-                <Label
-                  htmlFor="email"
-                  className="text-xs font-medium text-gray-700"
-                >
+                <Label htmlFor="email" className="text-xs font-medium text-foreground flex items-center gap-1">
+                  <Mail className="h-3 w-3 text-primary" />
                   Email
                 </Label>
                 <Input
@@ -212,218 +217,210 @@ export function RegisterForm({
                   placeholder="nama@example.com"
                   autoComplete="email"
                   disabled={isLoading}
-                  className="h-7 w-full rounded-md border-gray-200 bg-white px-2 text-xs shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                  className="h-8 w-full border border-border bg-background px-2 text-xs placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors rounded-md"
                   {...register("email")}
                 />
                 {errors.email && (
-                  <p className="text-xs font-medium text-red-500">
+                  <p className="text-[10px] text-destructive flex items-center gap-1">
+                    <svg className="h-2 w-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
                     {errors.email.message}
                   </p>
                 )}
               </div>
 
-              <div className="space-y-1">
-                <Label
-                  htmlFor="password"
-                  className="text-xs font-medium text-gray-700"
-                >
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  disabled={isLoading}
-                  className="h-7 w-full rounded-md border-gray-200 bg-white px-2 text-xs shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
-                  {...register("password")}
-                />
-                {errors.password && (
-                  <p className="text-xs font-medium text-red-500">
-                    {errors.password.message}
-                  </p>
-                )}
+              {/* Password Fields */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <Label htmlFor="password" className="text-xs font-medium text-foreground flex items-center gap-1">
+                    <Lock className="h-3 w-3 text-primary" />
+                    Password
+                  </Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    disabled={isLoading}
+                    className="h-8 w-full border border-border bg-background px-2 text-xs placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors rounded-md"
+                    {...register("password")}
+                  />
+                  {errors.password && (
+                    <p className="text-[10px] text-destructive flex items-center gap-1">
+                      <svg className="h-2 w-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {errors.password.message}
+                    </p>
+                  )}
+                </div>
+                
+                <div className="space-y-1">
+                  <Label htmlFor="confirmPassword" className="text-xs font-medium text-foreground flex items-center gap-1">
+                    <Lock className="h-3 w-3 text-primary" />
+                    Konfirmasi
+                  </Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    disabled={isLoading}
+                    className="h-8 w-full border border-border bg-background px-2 text-xs placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors rounded-md"
+                    {...register("confirmPassword")}
+                  />
+                  {errors.confirmPassword && (
+                    <p className="text-[10px] text-destructive flex items-center gap-1">
+                      <svg className="h-2 w-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {errors.confirmPassword.message}
+                    </p>
+                  )}
+                </div>
               </div>
+            </div>
 
+            {/* Organization Information */}
+            <div className="space-y-2">
+              <h3 className="text-xs font-medium text-foreground/80 border-b border-border/20 pb-1">
+                Informasi Organisasi
+              </h3>
+              
+              {/* Organization Name */}
               <div className="space-y-1">
-                <Label
-                  htmlFor="confirmPassword"
-                  className="text-xs font-medium text-gray-700"
-                >
-                  Konfirmasi Password
-                </Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  disabled={isLoading}
-                  className="h-7 w-full rounded-md border-gray-200 bg-white px-2 text-xs shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
-                  {...register("confirmPassword")}
-                />
-                {errors.confirmPassword && (
-                  <p className="text-xs font-medium text-red-500">
-                    {errors.confirmPassword.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <Label
-                  htmlFor="orgName"
-                  className="text-xs font-medium text-gray-700"
-                >
-                  Nama Organisasi *
+                <Label htmlFor="orgName" className="text-xs font-medium text-foreground flex items-center gap-1">
+                  <Building className="h-3 w-3 text-primary" />
+                  Nama Organisasi
                 </Label>
                 <Input
                   id="orgName"
                   type="text"
-                  placeholder="Nama Organisasi/Event Organizer"
+                  placeholder="Nama Organisasi"
                   autoComplete="organization"
                   disabled={isLoading}
-                  className="h-7 w-full rounded-md border-gray-200 bg-white px-2 text-xs shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                  className="h-8 w-full border border-border bg-background px-2 text-xs placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors rounded-md"
                   {...register("orgName")}
                 />
                 {errors.orgName && (
-                  <p className="text-xs font-medium text-red-500">
+                  <p className="text-[10px] text-destructive flex items-center gap-1">
+                    <svg className="h-2 w-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
                     {errors.orgName.message}
                   </p>
                 )}
               </div>
 
-              <div className="space-y-1">
-                <Label
-                  htmlFor="legalName"
-                  className="text-xs font-medium text-gray-700"
-                >
-                  Nama Legal (Opsional)
-                </Label>
-                <Input
-                  id="legalName"
-                  type="text"
-                  placeholder="Nama legal perusahaan"
-                  disabled={isLoading}
-                  className="h-7 w-full rounded-md border-gray-200 bg-white px-2 text-xs shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
-                  {...register("legalName")}
-                />
-                {errors.legalName && (
-                  <p className="text-xs font-medium text-red-500">
-                    {errors.legalName.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <Label
-                  htmlFor="phone"
-                  className="text-xs font-medium text-gray-700"
-                >
-                  Nomor Telepon (Opsional)
-                </Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="08xxxxxxxxxx"
-                  autoComplete="tel"
-                  disabled={isLoading}
-                  className="h-7 w-full rounded-md border-gray-200 bg-white px-2 text-xs shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
-                  {...register("phone")}
-                />
-                {errors.phone && (
-                  <p className="text-xs font-medium text-red-500">
-                    {errors.phone.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <Label
-                  htmlFor="npwp"
-                  className="text-xs font-medium text-gray-700"
-                >
-                  NPWP (Opsional)
-                </Label>
-                <Input
-                  id="npwp"
-                  type="text"
-                  placeholder="Nomor NPWP"
-                  disabled={isLoading}
-                  className="h-7 w-full rounded-md border-gray-200 bg-white px-2 text-xs shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
-                  {...register("npwp")}
-                />
-                {errors.npwp && (
-                  <p className="text-xs font-medium text-red-500">
-                    {errors.npwp.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Button
-                type="submit"
-                className="h-8 w-full bg-blue-800 text-xs font-semibold text-white transition-all duration-200 hover:bg-blue-900 focus:ring-1 focus:ring-blue-200"
-                disabled={isLoading}
-              >
-                {isLoading && (
-                  <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
-                )}
-                Daftar sebagai Organizer
-              </Button>
-
-              <div className="relative flex items-center justify-center py-1">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-200"></span>
+              {/* Optional Fields */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <Label htmlFor="phone" className="text-xs font-medium text-foreground flex items-center gap-1">
+                    <Phone className="h-3 w-3 text-primary" />
+                    Telepon
+                  </Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="08xxxxxxxxx"
+                    autoComplete="tel"
+                    disabled={isLoading}
+                    className="h-8 w-full border border-border bg-background px-2 text-xs placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors rounded-md"
+                    {...register("phone")}
+                  />
                 </div>
-                <span className="relative bg-white px-2 text-xs font-medium text-gray-500">
-                  Atau daftar dengan
-                </span>
+                
+                <div className="space-y-1">
+                  <Label htmlFor="npwp" className="text-xs font-medium text-foreground flex items-center gap-1">
+                    <FileText className="h-3 w-3 text-primary" />
+                    NPWP
+                  </Label>
+                  <Input
+                    id="npwp"
+                    type="text"
+                    placeholder="NPWP (Opsional)"
+                    disabled={isLoading}
+                    className="h-8 w-full border border-border bg-background px-2 text-xs placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors rounded-md"
+                    {...register("npwp")}
+                  />
+                </div>
               </div>
+            </div>
+          </div>
 
-              <Button
-                variant="outline"
-                className="h-8 w-full border border-gray-200 bg-white text-xs font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50"
-                type="button"
-                disabled={isLoading}
-                onClick={handleGoogleRegister}
-              >
-                {isLoading ? (
-                  <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
-                ) : (
-                  <svg
-                    className="mr-1.5 h-3.5 w-3.5"
-                    aria-hidden="true"
-                    focusable="false"
-                    data-prefix="fab"
-                    data-icon="google"
-                    role="img"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 488 512"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
-                    ></path>
-                  </svg>
-                )}
-                Google
-              </Button>
+          {/* Submit Button */}
+          <div className="space-y-3 pt-1">
+            <Button
+              type="submit"
+              size="sm"
+              className="h-8 w-full text-xs font-medium bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-all duration-200 rounded-md"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+              ) : (
+                <Sparkles className="mr-1 h-3 w-3" />
+              )}
+              {isLoading ? "Mendaftar..." : "Daftar Organizer"}
+            </Button>
+
+            {/* Divider */}
+            <div className="relative flex items-center justify-center py-1">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border"></span>
+              </div>
+              <span className="relative bg-background px-2 text-[10px] text-muted-foreground">
+                Atau
+              </span>
             </div>
 
-            <div className="mt-2 text-center">
-              <p className="text-xs text-gray-600">
-                Sudah punya akun organizer?{" "}
-                <Link
-                  href="/login"
-                  className="font-medium text-blue-600 transition-colors hover:text-blue-800"
+            {/* Google Register */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 w-full text-xs font-medium hover:bg-primary/5 hover:border-primary/30 transition-colors rounded-md"
+              type="button"
+              disabled={isLoading}
+              onClick={handleGoogleRegister}
+            >
+              {isLoading ? (
+                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+              ) : (
+                <svg
+                  className="mr-1 h-3 w-3"
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fab"
+                  data-icon="google"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 488 512"
                 >
-                  Login
-                </Link>
-              </p>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+                  <path
+                    fill="currentColor"
+                    d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
+                  ></path>
+                </svg>
+              )}
+              Google
+            </Button>
+          </div>
+
+          {/* Login Link */}
+          <div className="text-center pt-2 border-t border-border">
+            <p className="text-[10px] text-muted-foreground">
+              Sudah punya akun?{" "}
+              <Link
+                href="/login"
+                className="font-medium text-primary hover:text-primary/80 transition-colors hover:underline"
+              >
+                Masuk
+              </Link>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

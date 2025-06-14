@@ -2,6 +2,7 @@ import { prisma } from "~/server/db";
 import { organizerService } from "~/server/services/organizer.service";
 import { PaymentStatus } from "@prisma/client";
 import { emailService } from "~/lib/email-service";
+import { generateTransactionQRCodes } from "~/server/services/ticket-qr.service";
 
 /**
  * Get orders for an organizer's events
@@ -10,10 +11,12 @@ export async function handleGetOrganizerOrders(params: {
   userId: string;
   page?: number | string;
   limit?: number | string;
-  status?: PaymentStatus;
+  status?: PaymentStatus | "MANUAL_PENDING";
   eventId?: string;
   search?: string;
 }) {
+  console.log("[Business Logic] handleGetOrganizerOrders called with params:", params);
+
   const { userId, page = 1, limit = 10, status, eventId, search } = params;
 
   // Validate parameters
@@ -21,11 +24,22 @@ export async function handleGetOrganizerOrders(params: {
   const validLimit = Math.min(100, Math.max(1, Number(limit)));
   const skip = (validPage - 1) * validLimit;
 
+  console.log("[Business Logic] Validated parameters:", { validPage, validLimit, skip });
+
   // Check if user is an organizer
+  console.log("[Business Logic] Looking up organizer for userId:", userId);
   const organizer = await organizerService.findByUserId(userId);
+
   if (!organizer) {
+    console.log("[Business Logic] No organizer found for userId:", userId);
     throw new Error("User is not an organizer");
   }
+
+  console.log("[Business Logic] Organizer found:", {
+    organizerId: organizer.id,
+    orgName: organizer.orgName,
+    verified: organizer.verified
+  });
 
   // Build where clause
   const where: any = {
@@ -36,7 +50,17 @@ export async function handleGetOrganizerOrders(params: {
 
   // Add optional filters
   if (status) {
-    where.status = status;
+    if (status === "MANUAL_PENDING") {
+      // Filter for manual payments awaiting verification
+      where.status = "PENDING";
+      where.paymentMethod = "MANUAL_PAYMENT";
+      where.details = {
+        path: ["awaitingVerification"],
+        equals: true,
+      };
+    } else {
+      where.status = status;
+    }
   }
 
   if (eventId) {
@@ -52,6 +76,8 @@ export async function handleGetOrganizerOrders(params: {
   }
 
   // Get orders
+  console.log("[Business Logic] Executing database query with where clause:", JSON.stringify(where, null, 2));
+
   const [orders, total] = await Promise.all([
     prisma.transaction.findMany({
       where,
@@ -64,23 +90,37 @@ export async function handleGetOrganizerOrders(params: {
             id: true,
             name: true,
             email: true,
+            phone: true,
           },
         },
         event: {
           select: {
             id: true,
             title: true,
+            startDate: true,
+            venue: true,
           },
         },
         orderItems: {
           include: {
-            ticketType: true,
+            ticketType: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+              },
+            },
           },
         },
       },
     }),
     prisma.transaction.count({ where }),
   ]);
+
+  console.log("[Business Logic] Database query completed:", {
+    ordersFound: orders.length,
+    totalCount: total
+  });
 
   // Calculate pagination metadata
   const totalPages = Math.ceil(total / validLimit);
@@ -328,6 +368,14 @@ export async function handleUpdateOrganizerOrderStatus(params: {
         where: { id: orderId },
         data: {
           status,
+          details: {
+            ...(order.details as any),
+            awaitingVerification: false,
+            verifiedAt: new Date().toISOString(),
+            verifiedBy: userId,
+            verificationNotes: notes,
+            verifiedByType: "organizer",
+          },
           updatedAt: new Date(),
         },
       });
@@ -407,6 +455,23 @@ export async function handleUpdateOrganizerOrderStatus(params: {
     },
   );
 
+  // Generate QR codes for approved orders
+  if (status === "SUCCESS") {
+    try {
+      console.log(`🎫 Generating QR codes for approved order: ${orderId}`);
+      const qrResult = await generateTransactionQRCodes(orderId);
+      console.log(`🎫 QR code generation result: ${qrResult.generatedCount} generated, errors:`, qrResult.errors);
+
+      if (!qrResult.success && qrResult.errors.length > 0) {
+        console.warn(`⚠️ Some QR codes failed to generate for order ${orderId}:`, qrResult.errors);
+        // Don't fail the entire process if QR generation fails
+      }
+    } catch (qrError) {
+      console.error(`❌ Error generating QR codes for order ${orderId}:`, qrError);
+      // Don't fail the entire process if QR generation fails
+    }
+  }
+
   // Send email notification if order is approved
   if (status === "SUCCESS") {
     try {
@@ -448,7 +513,7 @@ export async function handleUpdateOrganizerOrderStatus(params: {
             time: eventTime,
             location: order.event.venue,
             address: `${order.event.address}, ${order.event.city}, ${order.event.province}`,
-            image: order.event.image || undefined,
+            image: order.event.posterUrl || undefined,
           },
           order: {
             invoiceNumber: order.invoiceNumber,
@@ -457,7 +522,7 @@ export async function handleUpdateOrganizerOrderStatus(params: {
           },
           tickets: order.tickets.map((ticket) => ({
             id: ticket.id,
-            ticketNumber: ticket.ticketNumber,
+            ticketNumber: ticket.id,
             ticketType: ticket.ticketType.name,
             holderName: ticket.ticketHolder?.fullName || customerName,
             qrCode: ticket.qrCode || undefined,

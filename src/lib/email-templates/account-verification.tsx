@@ -9,7 +9,7 @@ interface AccountVerificationEmailProps {
 export const AccountVerificationEmail: React.FC<AccountVerificationEmailProps> = ({
   userName,
   verificationUrl,
-  companyName = "VBTix"
+  companyName = "VBTicket"
 }) => {
   return (
     <html>
@@ -173,9 +173,8 @@ export const AccountVerificationEmail: React.FC<AccountVerificationEmailProps> =
               Email ini dikirim oleh {companyName}
             </p>
             <p style={{ margin: '0 0 10px 0' }}>
-              Jika Anda memiliki pertanyaan, hubungi kami di{' '}
-              <a href="mailto:support@vbtix.com" style={{ color: '#3b82f6' }}>
-                support@vbtix.com
+              Jika Anda memiliki pertanyaan, hubungi kami di{' '}              <a href="mailto:support@vbticket.com" style={{ color: '#3b82f6' }}>
+                support@vbticket.com
               </a>
             </p>
             <p style={{ margin: '0' }}>
@@ -192,7 +191,7 @@ export const AccountVerificationEmail: React.FC<AccountVerificationEmailProps> =
 export const getAccountVerificationTextEmail = (
   userName: string,
   verificationUrl: string,
-  companyName: string = "VBTix"
+  companyName: string = "VBTicket"
 ) => {
   return `
 Selamat Datang di ${companyName}!
@@ -212,7 +211,7 @@ Setelah verifikasi, Anda dapat:
 - Menikmati promo dan diskon eksklusif
 - Melihat riwayat pembelian tiket
 
-Jika Anda memiliki pertanyaan, hubungi kami di support@vbtix.com
+Jika Anda memiliki pertanyaan, hubungi kami di support@vbticket.com
 
 © 2025 ${companyName}. All rights reserved.
   `.trim();

@@ -9,10 +9,9 @@ interface EmailConfig {
   companyName: string;
 }
 
-const defaultConfig: EmailConfig = {
-  from: process.env.EMAIL_FROM || "noreply@vbtix.com",
-  replyTo: "support@vbtix.com",
-  companyName: "VBTix",
+const defaultConfig: EmailConfig = {  from: process.env.EMAIL_FROM || "noreply@vbticket.com",
+  replyTo: "support@vbticket.com",
+  companyName: "VBTicket",
 };
 
 export class EmailService {
@@ -465,7 +464,7 @@ Tiket #${index + 1}
 
 Terima kasih telah menggunakan ${this.config.companyName}
 
-Butuh bantuan? Hubungi kami di support@vbtix.com
+Butuh bantuan? Hubungi kami di support@vbticket.com
 
 © 2025 ${this.config.companyName}. All rights reserved.
     `.trim();

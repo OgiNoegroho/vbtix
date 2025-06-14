@@ -42,10 +42,12 @@ export async function handleGetPublishedEvents(params: {
     status: "PUBLISHED", // Explicitly set status to PUBLISHED
   };
   console.log("Service params:", serviceParams);
-
   // Call the event service to get events
   console.log("Calling eventService.findAll...");
-  const { events, total } = await eventService.findAll(serviceParams);
+  const { events, total } = await eventService.findAll({
+    ...serviceParams,
+    isAdminView: false, // Explicitly set to false for buyer endpoints
+  });
   console.log(
     `eventService.findAll returned ${events.length} events out of ${total} total`,
   );
@@ -195,13 +197,13 @@ export async function handleGetEventById(params: {
  */
 export async function handleGetFeaturedEvents(limit: number = 5) {
   console.log("handleGetFeaturedEvents called with limit:", limit);
-
   // Get featured events using the service
   console.log("Calling eventService.findAll for featured events...");
   const { events } = await eventService.findAll({
     featured: true,
     status: EventStatus.PUBLISHED, // Explicitly set status to PUBLISHED
     limit,
+    isAdminView: false, // Explicitly set to false for buyer endpoints
   });
   console.log(`Found ${events.length} featured events`);
 

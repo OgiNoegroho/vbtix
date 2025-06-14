@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "~/server/auth";
-import { UserRole } from "@prisma/client";
 import { ticketService } from "~/server/services/ticket.service";
-import { organizerService } from "~/server/services/organizer.service";
 import { uploadImage } from "~/lib/cloudinary-utils";
+import { validateOrganizerTicketAccess } from "~/lib/auth/organizer-auth";
 
 /**
  * PUT /api/organizer/[id]/tickets/[ticketId]/image
@@ -14,59 +12,21 @@ export async function PUT(
   { params }: { params: Promise<{ id: string; ticketId: string }> },
 ) {
   try {
-    // Check authentication and authorization
-    const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    // Only organizers and admins can update ticket images
-    if (
-      session.user.role !== UserRole.ORGANIZER &&
-      session.user.role !== UserRole.ADMIN
-    ) {
-      return NextResponse.json(
-        { success: false, error: "Forbidden" },
-        { status: 403 },
-      );
-    }
-
     const { id: organizerId, ticketId } = await params;
 
-    // Verify organizer
-    const organizer = await organizerService.findByUserId(session.user.id);
-    if (
-      !organizer ||
-      (organizer.id !== organizerId && session.user.role !== UserRole.ADMIN)
-    ) {
+    // Use enhanced authorization utility
+    const authResult = await validateOrganizerTicketAccess(organizerId, ticketId);
+
+    if (!authResult.success) {
+      console.error("Authorization failed:", authResult.error);
       return NextResponse.json(
-        { success: false, error: "Forbidden" },
-        { status: 403 },
+        { success: false, error: authResult.error },
+        { status: authResult.statusCode || 403 },
       );
     }
 
-    // Get the ticket to verify ownership
-    const ticket = await ticketService.findById(ticketId);
-    if (!ticket) {
-      return NextResponse.json(
-        { success: false, error: "Ticket not found" },
-        { status: 404 },
-      );
-    }
-
-    // Verify that the ticket belongs to an event organized by this organizer
-    if (
-      ticket.ticketType.event.organizer.id !== organizer.id &&
-      session.user.role !== UserRole.ADMIN
-    ) {
-      return NextResponse.json(
-        { success: false, error: "Ticket does not belong to this organizer" },
-        { status: 403 },
-      );
-    }
+    const { organizer, ticket } = authResult;
+    console.log("Authorization successful for organizer:", organizer.orgName);
 
     // Check if the request is JSON or FormData
     let imageUrl: string | null = null;
@@ -103,7 +63,7 @@ export async function PUT(
       const buffer = Buffer.from(bytes);
 
       // Upload to Cloudinary using standardized utility
-      const result = await uploadImage(buffer, "vbtix/tickets");
+      const result = await uploadImage(buffer, "vbticket/tickets");
 
       imageUrl = result.secure_url;
       imagePublicId = result.public_id;
@@ -145,60 +105,20 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string; ticketId: string }> },
 ) {
   try {
-    // Check authentication and authorization
-    const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
-      );
-    }
-
-    // Only organizers and admins can delete ticket images
-    if (
-      session.user.role !== UserRole.ORGANIZER &&
-      session.user.role !== UserRole.ADMIN
-    ) {
-      return NextResponse.json(
-        { success: false, error: "Forbidden" },
-        { status: 403 },
-      );
-    }
-
     const { id: organizerId, ticketId } = await params;
 
-    // Verify organizer
-    const organizer = await organizerService.findByUserId(session.user.id);
-    if (
-      !organizer ||
-      (organizer.id !== organizerId && session.user.role !== UserRole.ADMIN)
-    ) {
+    // Use enhanced authorization utility
+    const authResult = await validateOrganizerTicketAccess(organizerId, ticketId);
+
+    if (!authResult.success) {
+      console.error("Authorization failed:", authResult.error);
       return NextResponse.json(
-        { success: false, error: "Forbidden" },
-        { status: 403 },
+        { success: false, error: authResult.error },
+        { status: authResult.statusCode || 403 },
       );
     }
 
-    // Get the ticket to verify ownership
-    const ticket = await ticketService.findById(ticketId);
-    if (!ticket) {
-      return NextResponse.json(
-        { success: false, error: "Ticket not found" },
-        { status: 404 },
-      );
-    }
-
-    // Verify that the ticket belongs to an event organized by this organizer
-    if (
-      ticket.ticketType.event.organizer.id !== organizer.id &&
-      session.user.role !== UserRole.ADMIN
-    ) {
-      return NextResponse.json(
-        { success: false, error: "Ticket does not belong to this organizer" },
-        { status: 403 },
-      );
-    }
-
+    // Authorization already verified by validateOrganizerTicketAccess
     // Update ticket to remove image URL and public ID
     const updatedTicket = await ticketService.updateTicket(ticketId, {
       imageUrl: null,

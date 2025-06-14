@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
         result = await emailService.sendAccountVerification({
           to: email,
           userName: "John Doe",
-          verificationUrl: "https://vbtix.com/verify?token=sample-token-123"
+          verificationUrl: "https://vbticket.com/verify?token=sample-token-123"
         });
         break;
 
@@ -124,10 +124,9 @@ export async function GET() {
         }
       ],
       configuration: {
-        provider: "Resend",
-        from: process.env.EMAIL_FROM || "noreply@vbtix.com",
-        replyTo: "support@vbtix.com",
-        companyName: "VBTix"
+        provider: "Resend",        from: process.env.EMAIL_FROM || "noreply@vbticket.com",
+        replyTo: "support@vbticket.com",
+        companyName: "VBTicket"
       }
     }
   });

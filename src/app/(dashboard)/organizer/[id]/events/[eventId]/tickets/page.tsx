@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   useOrganizerEventDetail,
@@ -65,7 +65,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { DeferredTicketUploader } from "~/components/ui/deferred-ticket-uploader";
 import { Separator } from "~/components/ui/separator";
 
 export default function EventTicketsPage({
@@ -91,10 +90,7 @@ export default function EventTicketsPage({
     saleStartDate: "",
     saleEndDate: "",
   });
-  const [ticketImage, setTicketImage] = useState<File | null>(null);
-  const [ticketImagePreview, setTicketImagePreview] = useState<string | null>(
-    null,
-  );
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
 
@@ -131,18 +127,7 @@ export default function EventTicketsPage({
     }));
   };
 
-  // Handle ticket image change
-  const handleTicketImageChange = (file: File | null) => {
-    setTicketImage(file);
 
-    // Create a preview URL for the image
-    if (file) {
-      const previewUrl = URL.createObjectURL(file);
-      setTicketImagePreview(previewUrl);
-    } else {
-      setTicketImagePreview(null);
-    }
-  };
 
   // Handle create ticket
   const handleCreateTicket = async (e: React.FormEvent) => {
@@ -151,20 +136,53 @@ export default function EventTicketsPage({
     setFormError("");
 
     try {
-      // Create the ticket data
+      // Validate required fields before processing
+      if (!ticketFormData.name.trim()) {
+        throw new Error("Ticket name is required");
+      }
+      if (!ticketFormData.price || isNaN(Number(ticketFormData.price))) {
+        throw new Error("Valid price is required");
+      }
+      if (!ticketFormData.quantity || isNaN(Number(ticketFormData.quantity))) {
+        throw new Error("Valid quantity is required");
+      }
+      if (!ticketFormData.maxPerPurchase || isNaN(Number(ticketFormData.maxPerPurchase))) {
+        throw new Error("Valid max per purchase is required");
+      }
+
+      // Parse numeric values
+      const price = parseFloat(ticketFormData.price);
+      const quantity = parseInt(ticketFormData.quantity, 10);
+      const maxPerPurchase = parseInt(ticketFormData.maxPerPurchase, 10);
+
+      // Additional validation
+      if (price < 0) {
+        throw new Error("Price must be a positive number");
+      }
+      if (quantity <= 0) {
+        throw new Error("Quantity must be a positive integer");
+      }
+      if (maxPerPurchase <= 0) {
+        throw new Error("Max per purchase must be a positive integer");
+      }
+      if (maxPerPurchase > quantity) {
+        throw new Error("Max per purchase cannot exceed total quantity");
+      }
+
+      // Create the ticket data with proper types
       const ticketData = {
-        name: ticketFormData.name,
-        description: ticketFormData.description,
-        price: parseFloat(ticketFormData.price),
-        quantity: parseInt(ticketFormData.quantity, 10),
-        maxPerPurchase: parseInt(ticketFormData.maxPerPurchase, 10),
+        name: ticketFormData.name.trim(),
+        description: ticketFormData.description.trim() || undefined,
+        price: price,
+        quantity: quantity,
+        maxPerPurchase: maxPerPurchase,
         isVisible: ticketFormData.isVisible,
         allowTransfer: ticketFormData.allowTransfer,
-        ticketFeatures: ticketFormData.ticketFeatures || undefined,
-        perks: ticketFormData.perks || undefined,
-        earlyBirdDeadline: ticketFormData.earlyBirdDeadline || undefined,
-        saleStartDate: ticketFormData.saleStartDate || undefined,
-        saleEndDate: ticketFormData.saleEndDate || undefined,
+        ticketFeatures: ticketFormData.ticketFeatures.trim() || undefined,
+        perks: ticketFormData.perks.trim() || undefined,
+        earlyBirdDeadline: ticketFormData.earlyBirdDeadline.trim() || undefined,
+        saleStartDate: ticketFormData.saleStartDate.trim() || undefined,
+        saleEndDate: ticketFormData.saleEndDate.trim() || undefined,
       };
 
       // Create the ticket first
@@ -182,38 +200,15 @@ export default function EventTicketsPage({
       const result = await response.json();
 
       if (!response.ok) {
+        // Handle specific validation errors
+        if (result.details && Array.isArray(result.details)) {
+          const errorMessages = result.details.map((detail: any) => detail.message).join(", ");
+          throw new Error(`Validation error: ${errorMessages}`);
+        }
         throw new Error(result.error || "Failed to create ticket");
       }
 
-      // If we have an image, upload it
-      if (ticketImage) {
-        try {
-          // Get the created ticket ID
-          const ticketId = result.data.id;
 
-          // Create a FormData object to send the file
-          const formData = new FormData();
-          formData.append("file", ticketImage);
-
-          // Upload the image directly to the ticket image endpoint
-          const imageUpdateResponse = await fetch(
-            ORGANIZER_ENDPOINTS.TICKET_IMAGE(id, ticketId),
-            {
-              method: "PUT",
-              body: formData,
-            },
-          );
-
-          if (!imageUpdateResponse.ok) {
-            console.error(
-              "Failed to update ticket with image, but ticket was created",
-            );
-          }
-        } catch (imageError) {
-          console.error("Error uploading ticket image:", imageError);
-          // We don't throw here because the ticket was created successfully
-        }
-      }
 
       // Reset form and close dialog
       setTicketFormData({
@@ -230,8 +225,7 @@ export default function EventTicketsPage({
         saleStartDate: "",
         saleEndDate: "",
       });
-      setTicketImage(null);
-      setTicketImagePreview(null);
+
       setIsTicketDialogOpen(false);
 
       // Refresh tickets data
@@ -666,28 +660,7 @@ export default function EventTicketsPage({
                           </div>
                         </div>
 
-                        <Separator className="my-2" />
 
-                        {/* Ticket Image Upload */}
-                        <div className="space-y-4">
-                          <h3 className="text-sm font-medium">Ticket Image</h3>
-
-                          <div className="grid gap-2">
-                            <DeferredTicketUploader
-                              onChange={handleTicketImageChange}
-                              value={ticketImage}
-                              previewUrl={ticketImagePreview}
-                              disabled={isSubmitting}
-                            />
-                            <p className="text-muted-foreground text-xs">
-                              Upload an image that will be displayed on the
-                              ticket. This could be a custom design, event logo,
-                              or any visual that helps identify this ticket
-                              type. The image will be stored in Cloudinary and
-                              associated with this ticket type.
-                            </p>
-                          </div>
-                        </div>
                       </div>
                       <DialogFooter>
                         <Button

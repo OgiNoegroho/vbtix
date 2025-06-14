@@ -1,6 +1,6 @@
 # Alur Data Lengkap: Dari Database hingga UI dengan SWR
 
-Dokumen ini menjelaskan alur data lengkap dalam aplikasi VBTix, mulai dari database hingga tampilan UI, dengan fokus pada integrasi antara backend API 3-tier dan frontend data fetching menggunakan SWR.
+Dokumen ini menjelaskan alur data lengkap dalam aplikasi VBTicket, mulai dari database hingga tampilan UI, dengan fokus pada integrasi antara backend API 3-tier dan frontend data fetching menggunakan SWR.
 
 ## Daftar Isi
 
@@ -16,7 +16,7 @@ Dokumen ini menjelaskan alur data lengkap dalam aplikasi VBTix, mulai dari datab
 
 ## Gambaran Umum
 
-Alur data lengkap dalam aplikasi VBTix:
+Alur data lengkap dalam aplikasi VBTicket:
 
 ```
 Database → Service → Business Logic → API Route → SWR Hook → React Component → UI
@@ -780,7 +780,7 @@ if (error) {
 
 ## Kesimpulan
 
-Alur data lengkap dalam aplikasi VBTix menggabungkan:
+Alur data lengkap dalam aplikasi VBTicket menggabungkan:
 
 1. **Backend API 3-Tier**:
    - Tier 3 (Services): Akses database
@@ -800,4 +800,4 @@ Integrasi yang baik antara backend dan frontend memastikan:
 - Performa yang optimal dengan caching dan optimistic updates
 - UX yang baik dengan loading states dan error handling
 
-Dengan arsitektur ini, aplikasi VBTix dapat mengelola data secara efisien dari database hingga UI, memberikan pengalaman yang baik bagi pengguna dan maintainability yang baik bagi developer.
+Dengan arsitektur ini, aplikasi VBTicket dapat mengelola data secara efisien dari database hingga UI, memberikan pengalaman yang baik bagi pengguna dan maintainability yang baik bagi developer.

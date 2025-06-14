@@ -1,6 +1,7 @@
 "use client";
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import {
   useAdminEventDetail,
@@ -34,6 +35,9 @@ import {
   ImageIcon,
   Check,
   X,
+  Shield,
+  UserCheck,
+  AlertTriangle,
 } from "lucide-react";
 import { formatDate, formatPrice } from "~/lib/utils";
 
@@ -72,6 +76,7 @@ export default function AdminEventDetailPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
+  const { data: session } = useSession();
 
   // Fetch event detail from API
   const {
@@ -98,6 +103,16 @@ export default function AdminEventDetailPage({
   // State for feedback
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Determine event origin and permissions
+  const isOrganizerSubmitted = event?.organizer?.user?.id !== session?.user?.id;
+  const isPendingApproval = event?.status === "PENDING_REVIEW";
+  const isPublished = event?.status === "PUBLISHED";
+
+  // Admin can only edit events they created directly, not organizer-submitted events
+  const canEdit = !isOrganizerSubmitted;
+  const needsApproval = isOrganizerSubmitted && isPendingApproval;
+  const isOrganizerPublished = isOrganizerSubmitted && isPublished;
 
   const handleApproveEvent = async () => {
     try {
@@ -168,16 +183,47 @@ export default function AdminEventDetailPage({
               <Button variant="ghost" size="icon" onClick={() => router.back()}>
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <h1 className="text-2xl font-semibold">{event.title}</h1>
+              <div className="flex flex-col">
+                <h1 className="text-2xl font-semibold">{event.title}</h1>
+                <div className="flex items-center gap-2 mt-1">
+                  {isOrganizerSubmitted ? (
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <UserCheck className="h-3 w-3" />
+                      <span>Diajukan oleh organizer</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Shield className="h-3 w-3" />
+                      <span>Dibuat oleh admin</span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => router.push(`/admin/events/${id}/edit`)}
-              >
-                <Pencil className="mr-2 h-4 w-4" />
-                Edit Event
-              </Button>
+              {needsApproval ? (
+                <div className="flex items-center gap-2 text-amber-600">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span className="text-sm font-medium">Membutuhkan persetujuan</span>
+                </div>
+              ) : isOrganizerPublished ? (
+                <div className="flex items-center gap-2 text-green-600">
+                  <UserCheck className="h-4 w-4" />
+                  <span className="text-sm font-medium">Event organizer telah disetujui</span>
+                </div>
+              ) : canEdit ? (
+                <Button
+                  variant="outline"
+                  onClick={() => router.push(`/admin/events/${id}/edit`)}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit Event
+                </Button>
+              ) : (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <span className="text-sm">Event organizer - hanya bisa direview</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -374,26 +420,31 @@ export default function AdminEventDetailPage({
                       </CardContent>
                     </Card>
 
-                    {event?.status === "PENDING_REVIEW" && (
-                      <Card>
+                    {needsApproval && (
+                      <Card className="border-amber-200 bg-amber-50">
                         <CardHeader>
-                          <CardTitle>Review Actions</CardTitle>
+                          <CardTitle className="flex items-center gap-2 text-amber-800">
+                            <AlertTriangle className="h-5 w-5" />
+                            Review Actions
+                          </CardTitle>
+                          <CardDescription className="text-amber-700">
+                            Event ini diajukan oleh organizer dan membutuhkan persetujuan admin
+                          </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                           <Textarea
-                            placeholder="Feedback for organizer (optional)"
-                            className="mb-4"
+                            placeholder="Feedback untuk organizer (opsional)"
+                            className="mb-4 bg-white"
                             value={feedback}
                             onChange={(e) => setFeedback(e.target.value)}
                           />
                           <Button
-                            variant="success"
-                            className="w-full"
+                            className="w-full bg-green-600 hover:bg-green-700"
                             onClick={handleApproveEvent}
                             disabled={isSubmitting}
                           >
                             <Check className="mr-2 h-4 w-4" />
-                            {isSubmitting ? "Processing..." : "Approve Event"}
+                            {isSubmitting ? "Processing..." : "Setujui Event"}
                           </Button>
                           <Button
                             variant="destructive"
@@ -402,9 +453,37 @@ export default function AdminEventDetailPage({
                             disabled={isSubmitting}
                           >
                             <X className="mr-2 h-4 w-4" />
-                            {isSubmitting ? "Processing..." : "Reject Event"}
+                            {isSubmitting ? "Processing..." : "Tolak Event"}
                           </Button>
                         </CardContent>
+                      </Card>
+                    )}
+
+                    {!isOrganizerSubmitted && (
+                      <Card className="border-blue-200 bg-blue-50">
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2 text-blue-800">
+                            <Shield className="h-5 w-5" />
+                            Admin Event
+                          </CardTitle>
+                          <CardDescription className="text-blue-700">
+                            Event ini dibuat langsung oleh admin dan memiliki akses penuh untuk editing
+                          </CardDescription>
+                        </CardHeader>
+                      </Card>
+                    )}
+
+                    {isOrganizerPublished && (
+                      <Card className="border-green-200 bg-green-50">
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2 text-green-800">
+                            <UserCheck className="h-5 w-5" />
+                            Event Organizer Disetujui
+                          </CardTitle>
+                          <CardDescription className="text-green-700">
+                            Event ini telah disetujui dan dipublikasikan. Admin tidak dapat mengedit event organizer yang sudah disetujui.
+                          </CardDescription>
+                        </CardHeader>
                       </Card>
                     )}
                   </div>

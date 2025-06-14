@@ -1,6 +1,6 @@
 # Implementasi Arsitektur API 3-Tier dengan Validasi Schema
 
-Dokumen ini menjelaskan implementasi arsitektur API 3-tier dalam proyek VBTix, dengan fokus khusus pada penggunaan validasi schema.
+Dokumen ini menjelaskan implementasi arsitektur API 3-tier dalam proyek VBTicket, dengan fokus khusus pada penggunaan validasi schema.
 
 ## Daftar Isi
 
@@ -46,7 +46,7 @@ Arsitektur 3-tier adalah pendekatan pengembangan aplikasi yang membagi aplikasi 
 
 ### Pengenalan Zod
 
-Zod adalah library validasi schema TypeScript yang memungkinkan kita untuk mendefinisikan schema data dan memvalidasi data terhadap schema tersebut. Dalam proyek VBTix, Zod digunakan untuk:
+Zod adalah library validasi schema TypeScript yang memungkinkan kita untuk mendefinisikan schema data dan memvalidasi data terhadap schema tersebut. Dalam proyek VBTicket, Zod digunakan untuk:
 
 1. Validasi input dari HTTP request
 2. Memastikan data yang dikirim ke database sesuai dengan model

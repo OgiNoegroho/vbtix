@@ -14,7 +14,7 @@ import type {
 export async function handleGetEvents(params: EventQuerySchema) {
   console.log("handleGetEvents params:", params);
 
-  // Memanggil service
+  // Memanggil service with isAdminView flag for admin endpoints
   const { events, total } = await eventService.findAll({
     page: params.page,
     limit: params.limit,
@@ -22,6 +22,7 @@ export async function handleGetEvents(params: EventQuerySchema) {
     organizerId: params.organizerId || undefined, // Convert null to undefined
     search: params.search,
     featured: params.featured,
+    isAdminView: true, // Set to true for admin endpoints
   });
 
   // Transformasi data jika diperlukan
@@ -57,7 +58,7 @@ export async function handleGetEvents(params: EventQuerySchema) {
 }
 
 /**
- * Membuat event baru
+ * Create event - handles both admin and organizer creation with different workflows
  */
 export async function handleCreateEvent(
   data: CreateEventSchema,
@@ -66,14 +67,41 @@ export async function handleCreateEvent(
   console.log("handleCreateEvent data:", data);
   console.log("handleCreateEvent userId:", userId);
 
-  // Cek apakah user adalah organizer
+  // Check if user is an organizer
   const organizer = await organizerService.findByUserId(userId);
   if (!organizer) {
     throw new Error("User is not an organizer");
   }
 
-  // Memanggil service untuk membuat event
+  // Call service to create event
   const event = await eventService.createEvent(data, organizer.id);
+
+  return {
+    ...event,
+    formattedStartDate: formatDate(event.startDate),
+    formattedEndDate: formatDate(event.endDate),
+  };
+}
+
+/**
+ * Create event specifically for admin users - bypasses approval workflow
+ */
+export async function handleCreateAdminEvent(
+  data: CreateEventSchema,
+  adminUserId: string,
+) {
+  console.log("handleCreateAdminEvent data:", data);
+  console.log("handleCreateAdminEvent adminUserId:", adminUserId);
+
+  // For admin events, we need to create a temporary organizer record or handle differently
+  // Admin events are published directly without approval
+  const eventData = {
+    ...data,
+    status: EventStatus.PUBLISHED, // Admin events are published immediately
+  };
+
+  // Create event with admin as organizer (or handle admin events differently)
+  const event = await eventService.createEvent(eventData, adminUserId);
 
   return {
     ...event,

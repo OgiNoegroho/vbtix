@@ -1,6 +1,6 @@
 # Implementasi SWR untuk Data Fetching
 
-Dokumentasi ini menjelaskan cara mengimplementasikan SWR (Stale-While-Revalidate) untuk data fetching dalam aplikasi penjualan tiket konser VBTix.
+Dokumentasi ini menjelaskan cara mengimplementasikan SWR (Stale-While-Revalidate) untuk data fetching dalam aplikasi penjualan tiket konser VBTicket.
 
 ## Daftar Isi
 
@@ -661,4 +661,4 @@ import { SWRConfig } from 'swr';
 
 ---
 
-Dengan mengikuti panduan ini, Anda dapat mengimplementasikan data fetching yang efisien dan robust menggunakan SWR dalam aplikasi penjualan tiket konser VBTix.
+Dengan mengikuti panduan ini, Anda dapat mengimplementasikan data fetching yang efisien dan robust menggunakan SWR dalam aplikasi penjualan tiket konser VBTicket.

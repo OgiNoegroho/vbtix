@@ -4,6 +4,7 @@ import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import { useIsMobile } from "~/lib/hooks/use-mobile";
+import { MagicCard } from "~/components/ui/magic-card";
 import {
   Card,
   CardContent,
@@ -156,17 +157,23 @@ export function ChartAreaInteractive() {
     startDate.setDate(startDate.getDate() - daysToSubtract);
     return date >= startDate;
   });
-
   return (
-    <Card className="@container/card">
-      <CardHeader className="relative">
-        <CardTitle>Total Visitors</CardTitle>
-        <CardDescription>
-          <span className="hidden @[540px]/card:block">
-            Total for the last 3 months
-          </span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
-        </CardDescription>
+    <MagicCard 
+      className="border-0 bg-background/50 backdrop-blur-sm shadow-xl"
+      gradientColor="rgba(148, 163, 184, 0.1)"
+    >
+      <CardHeader className="relative pb-6">
+        <div className="space-y-2">
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-slate-600 to-slate-800 bg-clip-text text-transparent">
+            Statistik Pengunjung
+          </CardTitle>
+          <CardDescription className="text-base">
+            <span className="hidden @[540px]/card:block">
+              Total pengunjung untuk 3 bulan terakhir
+            </span>
+            <span className="@[540px]/card:hidden">3 bulan terakhir</span>
+          </CardDescription>
+        </div>
         <div className="absolute top-4 right-4">
           <ToggleGroup
             type="single"
@@ -175,32 +182,31 @@ export function ChartAreaInteractive() {
             variant="outline"
             className="hidden @[767px]/card:flex"
           >
-            <ToggleGroupItem value="90d" className="h-8 px-2.5">
-              Last 3 months
+            <ToggleGroupItem value="90d" className="h-8 px-3 rounded-lg bg-background/50 hover:bg-accent/50">
+              3 Bulan
             </ToggleGroupItem>
-            <ToggleGroupItem value="30d" className="h-8 px-2.5">
-              Last 30 days
+            <ToggleGroupItem value="30d" className="h-8 px-3 rounded-lg bg-background/50 hover:bg-accent/50">
+              30 Hari
             </ToggleGroupItem>
-            <ToggleGroupItem value="7d" className="h-8 px-2.5">
-              Last 7 days
+            <ToggleGroupItem value="7d" className="h-8 px-3 rounded-lg bg-background/50 hover:bg-accent/50">
+              7 Hari
             </ToggleGroupItem>
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger
-              className="flex w-40 @[767px]/card:hidden"
+              className="flex w-40 @[767px]/card:hidden rounded-xl border-border/50 bg-background/50"
               aria-label="Select a value"
             >
-              <SelectValue placeholder="Last 3 months" />
+              <SelectValue placeholder="3 bulan terakhir" />
             </SelectTrigger>
-            <SelectContent className="rounded-xl">
+            <SelectContent className="rounded-xl border-border/50 bg-background/90 backdrop-blur-sm">
               <SelectItem value="90d" className="rounded-lg">
-                Last 3 months
+                3 bulan terakhir
               </SelectItem>
               <SelectItem value="30d" className="rounded-lg">
-                Last 30 days
-              </SelectItem>
-              <SelectItem value="7d" className="rounded-lg">
-                Last 7 days
+                30 hari terakhir
+              </SelectItem>              <SelectItem value="7d" className="rounded-lg">
+                7 hari terakhir
               </SelectItem>
             </SelectContent>
           </Select>
@@ -280,10 +286,9 @@ export function ChartAreaInteractive() {
               fill="url(#fillDesktop)"
               stroke="var(--color-desktop)"
               stackId="a"
-            />
-          </AreaChart>
+            />          </AreaChart>
         </ChartContainer>
       </CardContent>
-    </Card>
+    </MagicCard>
   );
 }

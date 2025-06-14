@@ -255,27 +255,55 @@ export async function getRecentUsers(limit = 5) {
 // Mendapatkan overview penjualan
 export async function getSalesOverview() {
   try {
-    // Cek apakah model Transaction tersedia
-    if (!db.transaction) {
-      // Jika model tidak tersedia, kembalikan data dummy
-      return generateDummySalesData();
-    }
-
-    const salesByMonth = await db.transaction.groupBy({
-      by: ["createdAt"],
-      _sum: { amount: true },
-      orderBy: { createdAt: "asc" },
-    });
-
-    if (salesByMonth.length === 0) {
+    // Cek apakah ada data transaction
+    const transactionCount = await db.transaction.count();
+    
+    if (transactionCount === 0) {
       // Jika tidak ada data, kembalikan data dummy
       return generateDummySalesData();
     }
 
-    return salesByMonth.map((sale) => ({
-      month: sale.createdAt,
-      totalSales: Number(sale._sum.amount) || 0,
-    }));
+    // Ambil data sales dalam 6 bulan terakhir
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);    const transactions = await db.transaction.findMany({
+      where: {
+        createdAt: {
+          gte: sixMonthsAgo,
+        },
+        status: 'SUCCESS', // Hanya transaksi yang sukses
+      },
+      select: {
+        amount: true,
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    if (transactions.length === 0) {
+      return generateDummySalesData();
+    }
+
+    // Group by month manually
+    const salesByMonth = new Map();
+    
+    transactions.forEach(transaction => {
+      const monthKey = `${transaction.createdAt.getFullYear()}-${String(transaction.createdAt.getMonth() + 1).padStart(2, '0')}`;
+      const monthStart = new Date(transaction.createdAt.getFullYear(), transaction.createdAt.getMonth(), 1);
+      
+      if (!salesByMonth.has(monthKey)) {
+        salesByMonth.set(monthKey, {
+          month: monthStart,
+          totalSales: 0,
+        });
+      }
+      
+      const existing = salesByMonth.get(monthKey);
+      existing.totalSales += Number(transaction.amount);
+    });
+
+    return Array.from(salesByMonth.values()).sort((a, b) => a.month.getTime() - b.month.getTime());
   } catch (error) {
     console.error("Error in getSalesOverview:", error);
     // Kembalikan data dummy jika terjadi error

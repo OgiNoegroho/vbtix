@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import useSWR from "swr";
 import { ADMIN_ENDPOINTS } from "../endpoints";
 import { fetcher, postData, putData, deleteData } from "../client";

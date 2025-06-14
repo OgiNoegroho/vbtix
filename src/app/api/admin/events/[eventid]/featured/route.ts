@@ -14,7 +14,7 @@ const featuredSchema = z.object({
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ eventid: string }> },
 ) {
   try {
     // Check authentication and authorization
@@ -34,15 +34,22 @@ export async function POST(
       );
     }
 
-    const { id } = await params;
-    const body = await request.json();
-
-    try {
+    const { eventid } = await params;
+    
+    // Validate eventid exists
+    if (!eventid) {
+      return NextResponse.json(
+        { success: false, error: "Event ID is required" },
+        { status: 400 },
+      );
+    }
+    
+    const body = await request.json();    try {
       // Validate input
       const { featured } = featuredSchema.parse(body);
 
       // Update featured status
-      const result = await handleSetEventFeatured(id, featured);
+      const result = await handleSetEventFeatured(eventid, featured);
 
       return NextResponse.json({
         success: true,
@@ -55,8 +62,8 @@ export async function POST(
       );
     }
   } catch (error: any) {
-    const { id } = await params;
-    console.error(`Error setting featured status for event ${id}:`, error);
+    const { eventid } = await params;
+    console.error(`Error setting featured status for event ${eventid}:`, error);
     return NextResponse.json(
       {
         success: false,
@@ -73,7 +80,7 @@ export async function POST(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ eventid: string }> },
 ) {
   // Reuse the same implementation as POST
   return POST(request, { params });

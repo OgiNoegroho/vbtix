@@ -1,6 +1,6 @@
-# Dokumentasi API User VBTix untuk Postman
+# Dokumentasi API User VBTicket untuk Postman
 
-Dokumen ini berisi panduan untuk menguji endpoint API user VBTix menggunakan Postman. Endpoint user mencakup operasi CRUD (Create, Read, Update, Delete) untuk manajemen user.
+Dokumen ini berisi panduan untuk menguji endpoint API user VBTicket menggunakan Postman. Endpoint user mencakup operasi CRUD (Create, Read, Update, Delete) untuk manajemen user.
 
 ## Daftar Endpoint User
 

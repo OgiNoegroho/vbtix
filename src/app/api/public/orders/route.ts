@@ -8,7 +8,7 @@ import { z } from "zod";
 const ordersQuerySchema = z.object({
   page: z.string().optional(),
   limit: z.string().optional(),
-  status: z.nativeEnum(PaymentStatus).optional(),
+  status: z.union([z.nativeEnum(PaymentStatus), z.literal("MANUAL_PENDING")]).optional(),
 });
 
 /**

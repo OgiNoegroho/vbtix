@@ -31,6 +31,8 @@ interface Order {
   id: string;
   orderNumber: string;
   status: PaymentStatus;
+  paymentMethod?: string;
+  details?: any;
   totalAmount: number;
   createdAt: string;
   event: {
@@ -92,7 +94,7 @@ export default function OrdersPage() {
       params.append("limit", "10");
 
       // Fetch orders from API
-      const response = await fetch(`/api/buyer/orders?${params.toString()}`);
+      const response = await fetch(`/api/public/orders?${params.toString()}`);
       const data = await response.json();
 
       if (data.success) {
@@ -113,14 +115,14 @@ export default function OrdersPage() {
     const params = new URLSearchParams(searchParams);
     params.set("status", status);
     params.delete("page"); // Reset to page 1 when changing status
-    router.push(`/buyer/orders?${params.toString()}`);
+    router.push(`/orders?${params.toString()}`);
   };
 
   // Handle page change
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams);
     params.set("page", page.toString());
-    router.push(`/buyer/orders?${params.toString()}`);
+    router.push(`/orders?${params.toString()}`);
   };
 
   // Fetch orders on mount and when search params change
@@ -141,9 +143,14 @@ export default function OrdersPage() {
   };
 
   // Get expiration info for pending orders
-  const getExpirationInfo = (createdAt: string, status: PaymentStatus) => {
-    if (!["PENDING", "PENDING_PAYMENT"].includes(status)) {
+  const getExpirationInfo = (createdAt: string, status: PaymentStatus, paymentMethod?: string, details?: any) => {
+    if (status !== "PENDING") {
       return null;
+    }
+
+    // Manual payments awaiting verification don't expire
+    if (paymentMethod === "MANUAL_PAYMENT" && details?.awaitingVerification) {
+      return { expired: false, message: "Menunggu konfirmasi admin", urgent: false };
     }
 
     const now = new Date();
@@ -174,12 +181,14 @@ export default function OrdersPage() {
   };
 
   // Get status badge color
-  const getStatusBadge = (status: PaymentStatus) => {
+  const getStatusBadge = (status: PaymentStatus, paymentMethod?: string, details?: any) => {
+    if (status === PaymentStatus.PENDING && paymentMethod === "MANUAL_PAYMENT" && details?.awaitingVerification) {
+      return <Badge className="bg-orange-500">Menunggu Konfirmasi</Badge>;
+    }
+
     switch (status) {
       case PaymentStatus.PENDING:
         return <Badge className="bg-yellow-500">Menunggu Pembayaran</Badge>;
-      case "PENDING_PAYMENT" as PaymentStatus:
-        return <Badge className="bg-orange-500">Menunggu Konfirmasi</Badge>;
       case PaymentStatus.SUCCESS:
         return <Badge className="bg-green-500">Lunas</Badge>;
       case PaymentStatus.FAILED:
@@ -195,7 +204,7 @@ export default function OrdersPage() {
 
   // Order card component
   const OrderCard = ({ order }: { order: Order }) => {
-    const expirationInfo = getExpirationInfo(order.createdAt, order.status);
+    const expirationInfo = getExpirationInfo(order.createdAt, order.status, order.paymentMethod, order.details);
 
     return (
       <Card className="overflow-hidden transition-all hover:shadow-md">
@@ -221,7 +230,7 @@ export default function OrdersPage() {
             </div>
           </div>
           <div className="absolute top-2 right-2 flex flex-col gap-1">
-            {getStatusBadge(order.status)}
+            {getStatusBadge(order.status, order.paymentMethod, order.details)}
             {expirationInfo && (
               <Badge
                 variant="secondary"
@@ -269,7 +278,7 @@ export default function OrdersPage() {
         </CardContent>
         <CardFooter className="flex justify-between gap-2 border-t p-4">
           <Button variant="outline" size="sm" className="flex-1" asChild>
-            <Link href={`/buyer/orders/${order.id}`}>
+            <Link href={`/orders/${order.id}`}>
               <Receipt size={16} className="mr-2" />
               Detail
             </Link>
@@ -288,7 +297,7 @@ export default function OrdersPage() {
           )}
           {order.status === PaymentStatus.SUCCESS && (
             <Button size="sm" className="flex-1" asChild>
-              <Link href={`/buyer/tickets?orderId=${order.id}`}>
+              <Link href={`/tickets?orderId=${order.id}`}>
                 <ExternalLink size={16} className="mr-2" />
                 Lihat Tiket
               </Link>
@@ -329,7 +338,7 @@ export default function OrdersPage() {
           <TabsTrigger value={PaymentStatus.PENDING}>
             Menunggu Pembayaran
           </TabsTrigger>
-          <TabsTrigger value={"PENDING_PAYMENT" as PaymentStatus}>
+          <TabsTrigger value="MANUAL_PENDING">
             Menunggu Konfirmasi
           </TabsTrigger>
           <TabsTrigger value={PaymentStatus.SUCCESS}>Lunas</TabsTrigger>

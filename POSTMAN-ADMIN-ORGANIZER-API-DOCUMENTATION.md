@@ -1,6 +1,6 @@
-# Dokumentasi API Admin Organizer VBTix untuk Postman
+# Dokumentasi API Admin Organizer VBTicket untuk Postman
 
-Dokumen ini berisi panduan untuk menguji endpoint API admin organizer VBTix menggunakan Postman. Endpoint admin organizer mencakup operasi untuk melihat daftar organizer, mengelola organizer, dan memverifikasi organizer.
+Dokumen ini berisi panduan untuk menguji endpoint API admin organizer VBTicket menggunakan Postman. Endpoint admin organizer mencakup operasi untuk melihat daftar organizer, mengelola organizer, dan memverifikasi organizer.
 
 ## Daftar Endpoint Admin Organizer
 

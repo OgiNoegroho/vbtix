@@ -1,6 +1,6 @@
-# Dokumentasi SWR Hooks VBTix
+# Dokumentasi SWR Hooks VBTicket
 
-Dokumen ini berisi panduan penggunaan SWR hooks untuk mengakses API VBTix dari frontend. SWR hooks memudahkan pengambilan data dengan fitur caching, revalidasi otomatis, dan penanganan error.
+Dokumen ini berisi panduan penggunaan SWR hooks untuk mengakses API VBTicket dari frontend. SWR hooks memudahkan pengambilan data dengan fitur caching, revalidasi otomatis, dan penanganan error.
 
 ## Daftar Isi
 
@@ -696,6 +696,6 @@ export default function PendingEventsPage() {
 
 ## Kesimpulan
 
-SWR hooks menyediakan cara yang mudah dan efisien untuk mengakses API VBTix dari frontend. Dengan menggunakan hooks ini, Anda dapat dengan mudah mengambil data, menangani loading state, dan menangani error.
+SWR hooks menyediakan cara yang mudah dan efisien untuk mengakses API VBTicket dari frontend. Dengan menggunakan hooks ini, Anda dapat dengan mudah mengambil data, menangani loading state, dan menangani error.
 
 Untuk informasi lebih lanjut tentang SWR, kunjungi [dokumentasi resmi SWR](https://swr.vercel.app/).

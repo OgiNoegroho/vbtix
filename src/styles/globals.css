@@ -48,72 +48,88 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --radius: 0.75rem;  --background: oklch(0.99 0.005 106.423);
+  --foreground: oklch(0.15 0.02 258.338);
+  --card: oklch(1 0 0);  --card-foreground: oklch(0.15 0.02 258.338);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.15 0.02 258.338);
+  --primary: oklch(0.55 0.18 264.052);
+  --primary-foreground: oklch(0.98 0.02 106.423);
+  --secondary: oklch(0.65 0.15 184.704);
+  --secondary-foreground: oklch(0.98 0.02 106.423);
+  --muted: oklch(0.96 0.015 258.338);
+  --muted-foreground: oklch(0.55 0.02 258.338);
+  --accent: oklch(0.7 0.12 106.423);
+  --accent-foreground: oklch(0.98 0.02 106.423);
+  --destructive: oklch(0.65 0.15 27.325);  --destructive-foreground: oklch(0.98 0.02 106.423);
+  --border: oklch(0.9 0.01 258.338);
+  --input: oklch(0.9 0.01 258.338);
+  --ring: oklch(0.55 0.18 264.052);
+  --chart-1: oklch(0.55 0.18 264.052);
+  --chart-2: oklch(0.65 0.15 184.704);
+  --chart-3: oklch(0.7 0.12 106.423);
+  --chart-4: oklch(0.6 0.16 84.429);
+  --chart-5: oklch(0.75 0.11 70.08);--sidebar: oklch(1 0 0);  --sidebar-foreground: oklch(0.15 0.02 258.338);
+  --sidebar-primary: oklch(0.55 0.18 264.052);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.96 0.01 258.338);
+  --sidebar-accent-foreground: oklch(0.25 0.03 258.338);
+  --sidebar-border: oklch(0.9 0.01 258.338);
+  --sidebar-ring: oklch(0.55 0.18 264.052);
+  /* Enhanced brand colors with more vibrant palette */
+  --brand-primary: oklch(0.55 0.18 264.052);
+  --brand-secondary: oklch(0.65 0.15 184.704);
+  --brand-accent: oklch(0.7 0.12 106.423);
+  --brand-success: oklch(0.65 0.15 142.495);
+  --brand-warning: oklch(0.75 0.15 84.429);
+  --brand-info: oklch(0.6 0.16 220.847);  --gradient-primary: linear-gradient(135deg, oklch(0.55 0.18 264.052), oklch(0.65 0.15 184.704));
+  --gradient-secondary: linear-gradient(135deg, oklch(0.94 0.02 258.338), oklch(0.98 0.01 106.423));
+  --gradient-accent: linear-gradient(135deg, oklch(0.7 0.12 106.423), oklch(0.75 0.15 84.429));
+  --gradient-rainbow: linear-gradient(135deg, oklch(0.55 0.18 264.052), oklch(0.65 0.15 184.704), oklch(0.7 0.12 106.423), oklch(0.75 0.15 84.429));
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+.dark {  --background: oklch(0.08 0.01 258.338);
+  --foreground: oklch(0.95 0.01 106.423);
+  --card: oklch(0.12 0.02 258.338);
+  --card-foreground: oklch(0.95 0.01 106.423);
+  --popover: oklch(0.12 0.02 258.338);
+  --popover-foreground: oklch(0.95 0.01 106.423);
+  --primary: oklch(0.7 0.2 264.052);
+  --primary-foreground: oklch(0.08 0.01 258.338);
+  --secondary: oklch(0.75 0.18 184.704);
+  --secondary-foreground: oklch(0.08 0.01 258.338);
+  --muted: oklch(0.18 0.02 258.338);
+  --muted-foreground: oklch(0.65 0.02 258.338);
+  --accent: oklch(0.8 0.15 106.423);
+  --accent-foreground: oklch(0.08 0.01 258.338);
+  --destructive: oklch(0.7 0.15 27.325);
+  --destructive-foreground: oklch(0.95 0.01 106.423);
+  --border: oklch(0.25 0.02 258.338);
+  --input: oklch(0.25 0.02 258.338);
+  --ring: oklch(0.7 0.2 264.052);
+  --chart-1: oklch(0.7 0.2 264.052);
+  --chart-2: oklch(0.75 0.18 184.704);
+  --chart-3: oklch(0.8 0.15 106.423);
+  --chart-4: oklch(0.75 0.18 84.429);
+  --chart-5: oklch(0.85 0.11 70.08);  --sidebar: oklch(0.98 0.01 258.338);
+  --sidebar-foreground: oklch(0.15 0.02 258.338);
+  --sidebar-primary: oklch(0.7 0.2 264.052);
+  --sidebar-primary-foreground: oklch(0.98 0.01 258.338);
+  --sidebar-accent: oklch(0.94 0.02 258.338);
+  --sidebar-accent-foreground: oklch(0.25 0.02 258.338);
+  --sidebar-border: oklch(0.9 0.01 258.338);
+  --sidebar-ring: oklch(0.7 0.2 264.052);
+  /* Enhanced brand colors for dark mode */
+  --brand-primary: oklch(0.7 0.2 264.052);
+  --brand-secondary: oklch(0.75 0.18 184.704);
+  --brand-accent: oklch(0.8 0.15 106.423);
+  --brand-success: oklch(0.75 0.18 142.495);
+  --brand-warning: oklch(0.8 0.18 84.429);
+  --brand-info: oklch(0.75 0.2 220.847);
+  --gradient-primary: linear-gradient(135deg, oklch(0.72 0.22 35), oklch(0.8 0.18 55));
+  --gradient-secondary: linear-gradient(135deg, oklch(0.18 0.02 25), oklch(0.12 0.02 45));
+  --gradient-accent: linear-gradient(135deg, oklch(0.8 0.15 65), oklch(0.8 0.18 85));
+  --gradient-rainbow: linear-gradient(135deg, oklch(0.72 0.22 35), oklch(0.8 0.18 55), oklch(0.8 0.15 65), oklch(0.8 0.18 85));
 }
 
 @layer base {
@@ -121,6 +137,848 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
   }
+
+  /* Enhanced scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/30;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+@layer components {
+  /* Enhanced Magic UI Card Styling */
+  .magic-card {
+    @apply relative overflow-hidden bg-card border border-border/50 rounded-2xl shadow-lg transition-all duration-500;
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)/30) 100%);
+    backdrop-filter: blur(8px);
+  }
+
+  .magic-card:hover {
+    @apply shadow-2xl border-primary/30 -translate-y-2 scale-[1.02];
+    box-shadow:
+      0 25px 50px -12px rgba(0, 0, 0, 0.15),
+      0 0 0 1px hsl(var(--primary)/10),
+      0 0 20px hsl(var(--primary)/20);
+  }
+
+  .magic-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, hsl(var(--primary)/8) 50%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none; /* Ensure overlay doesn't block interactions */
+    z-index: 1; /* Keep below content */
+  }
+  .magic-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Enhanced Form Animations */
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+
+  /* Dot Pattern Background */
+  .bg-dot-pattern {
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+    background-size: 15px 15px;
+  }
+
+  /* Enhanced Glass Effect */
+  .glass-card {
+    @apply relative overflow-hidden backdrop-blur-xl border border-border/30 rounded-2xl shadow-lg;
+    background: linear-gradient(135deg, hsl(var(--background)/80) 0%, hsl(var(--muted)/40) 100%);
+  }
+
+  .glass-card:hover {
+    @apply shadow-2xl border-primary/20 -translate-y-1;
+    background: linear-gradient(135deg, hsl(var(--background)/85) 0%, hsl(var(--muted)/50) 100%);
+  }
+
+  /* Enhanced Gradient Backgrounds */
+  .bg-gradient-brand {
+    background: var(--gradient-primary);
+  }
+
+  .bg-gradient-subtle {
+    background: var(--gradient-secondary);
+  }
+
+  .bg-gradient-accent {
+    background: var(--gradient-accent);
+  }
+
+  .bg-gradient-rainbow {
+    background: var(--gradient-rainbow);
+  }
+
+  .bg-gradient-magic {
+    background: linear-gradient(135deg, hsl(var(--primary)/15) 0%, hsl(var(--secondary)/15) 50%, hsl(var(--accent)/15) 100%);
+  }
+
+  .bg-gradient-mesh {
+    background:
+      radial-gradient(circle at 20% 80%, hsl(var(--primary)/20) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, hsl(var(--secondary)/20) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, hsl(var(--accent)/15) 0%, transparent 50%),
+      linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)/10) 100%);
+  }
+
+  /* Enhanced Glass Effects */
+  .glass-effect {
+    @apply bg-background/80 backdrop-blur-xl border border-border/50;
+    background: linear-gradient(135deg, hsl(var(--background)/90) 0%, hsl(var(--muted)/30) 100%);
+  }
+
+  .glass-morphism {
+    @apply backdrop-blur-2xl border border-border/20 rounded-2xl;
+    background: linear-gradient(135deg, hsl(var(--background)/70) 0%, hsl(var(--muted)/20) 100%);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Shimmer Effect */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  /* Border Beam Effect */
+  .border-beam {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .border-beam::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--accent)));
+    border-radius: inherit;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    animation: border-beam 2s linear infinite;
+  }
+
+  @keyframes border-beam {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Enhanced Magic Button Styles */
+  .magic-button {
+    @apply relative overflow-hidden transition-all duration-500;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+  }
+
+  .magic-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s ease;
+    pointer-events: none; /* Ensure shimmer doesn't block clicks */
+    z-index: 1; /* Keep below button content */
+  }
+
+  .magic-button:hover::before {
+    left: 100%;
+  }
+
+  .magic-button:hover {
+    @apply scale-105 shadow-2xl;
+    box-shadow: 0 0 30px hsl(var(--primary)/40);
+  }
+
+  /* Enhanced Form Styles */
+  .magic-input {
+    @apply relative transition-all duration-300 border-2 border-border/50 rounded-xl;
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)/20) 100%);
+  }
+
+  .magic-input:focus-within {
+    @apply border-primary/50 shadow-lg;
+    box-shadow: 0 0 0 3px hsl(var(--primary)/10), 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .magic-form {
+    @apply space-y-6 p-8 rounded-2xl;
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)/10) 100%);
+    backdrop-filter: blur(8px);
+    border: 1px solid hsl(var(--border)/50);
+  }
+
+  /* Enhanced Form Animations */
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+
+  /* Dot Pattern Background */
+  .bg-dot-pattern {
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+    background-size: 15px 15px;
+  }
+
+  /* Enhanced Input Focus States */
+  .enhanced-focus {
+    @apply transition-all duration-300;
+  }
+
+  .enhanced-focus:focus-within {
+    @apply ring-2 ring-primary/20 border-primary/50 shadow-lg;
+    box-shadow: 0 0 0 3px hsl(var(--primary)/10), 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Enhanced Typography */
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--accent)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px hsl(var(--primary)/50);
+  }
+
+  /* Enhanced Backdrop Blur Utilities */
+  .backdrop-blur-xs { backdrop-filter: blur(2px); }
+  .backdrop-blur-sm { backdrop-filter: blur(4px); }
+  .backdrop-blur-md { backdrop-filter: blur(8px); }
+  .backdrop-blur-lg { backdrop-filter: blur(12px); }
+  .backdrop-blur-xl { backdrop-filter: blur(16px); }
+  .backdrop-blur-2xl { backdrop-filter: blur(24px); }
+  .backdrop-blur-3xl { backdrop-filter: blur(40px); }
+
+  /* Interactive States */
+  .interactive-scale {
+    @apply transition-transform duration-300 hover:scale-105 active:scale-95;
+  }
+
+  .interactive-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  .interactive-glow {
+    @apply transition-all duration-300 hover:shadow-2xl;
+  }
+
+  .interactive-glow:hover {
+    box-shadow: 0 0 30px hsl(var(--primary)/30);
+  }
+  /* Floating Animation */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Delayed floating animations for variety */
+  .animate-float-delay-1 {
+    animation: float 7s ease-in-out infinite 1s;
+  }
+
+  .animate-float-delay-2 {
+    animation: float 8s ease-in-out infinite 2s;
+  }
+
+  /* Enhanced Shimmer Effect */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+  /* Grid Pattern Background */
+  .bg-grid-white\/\[0\.02\] {
+    background-image: linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .dark .bg-grid-white\/\[0\.02\] {
+    background-image: linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+  }
+
+  /* Magic Button Effects - Consolidated */
+  .magic-button {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .magic-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+    pointer-events: none; /* Ensure shimmer doesn't block clicks */
+    z-index: 1; /* Keep below button content */
+  }
+
+  .magic-button:hover::before {
+    left: 100%;
+  }
+
+  /* Enhanced Card Shadow */
+  .shadow-3xl {
+    box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Glass Morphism Effect */
+  .glass-morphism {    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Enhanced Sidebar Animations */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(var(--float-distance, -10px));
+  }
+}
+
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+.animate-fade-in-scale {
+  animation: fadeInScale 0.2s ease-out;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Enhanced Magic Effects for Sidebar */
+.sidebar-magic-gradient {
+  background: linear-gradient(135deg, 
+    rgba(234, 88, 12, 0.1) 0%, 
+    rgba(245, 158, 11, 0.1) 50%, 
+    rgba(234, 88, 12, 0.1) 100%);
+  backdrop-filter: blur(20px);
+}
+
+.sidebar-item-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-item-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.1), 
+    transparent);
+  transition: left 0.5s;
+}
+
+.sidebar-item-glow:hover::before {
+  left: 100%;
+}
+
+/* Enhanced Text Gradients */
+.text-gradient-primary {
+  background: linear-gradient(135deg, #ea580c, #f59e0b, #ea580c);
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-flow 3s ease infinite;
+}
+
+@keyframes gradient-flow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Better Glass Morphism */
+.glass-enhanced {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+/* Improved Hover Transitions */
+.transition-enhanced {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-enhanced:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom Scrollbar for Sidebar */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 2px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+/* COMPREHENSIVE INPUT INTERACTION FIXES */
+
+/* Global fix for all input elements */
+input:not(:disabled):not([readonly]),
+textarea:not(:disabled):not([readonly]),
+select:not(:disabled) {
+  pointer-events: auto !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+  -moz-user-select: auto !important;
+  -ms-user-select: auto !important;
+  cursor: text !important;
+  touch-action: manipulation !important;
+  -webkit-touch-callout: default !important;
+  -webkit-user-select: auto !important;
+  -khtml-user-select: auto !important;
+  -moz-user-select: auto !important;
+  -ms-user-select: auto !important;
+  user-select: auto !important;
+}
+
+/* Specific fixes for different input types */
+input[type="text"]:not(:disabled):not([readonly]),
+input[type="email"]:not(:disabled):not([readonly]),
+input[type="password"]:not(:disabled):not([readonly]),
+input[type="number"]:not(:disabled):not([readonly]),
+input[type="tel"]:not(:disabled):not([readonly]),
+input[type="url"]:not(:disabled):not([readonly]),
+input[type="search"]:not(:disabled):not([readonly]) {
+  pointer-events: auto !important;
+  cursor: text !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+}
+
+/* Date and time inputs */
+input[type="date"]:not(:disabled):not([readonly]),
+input[type="time"]:not(:disabled):not([readonly]),
+input[type="datetime-local"]:not(:disabled):not([readonly]) {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* Enhanced Input Interaction Fixes */
+.input-interactive {
+  pointer-events: auto !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+  -moz-user-select: auto !important;
+  -ms-user-select: auto !important;
+  cursor: text !important;
+}
+
+/* Prevent any global styles from blocking input interaction */
+input[data-slot="input"]:not(:disabled):not([readonly]) {
+  pointer-events: auto !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+  cursor: text !important;
+}
+
+/* Form-specific fixes */
+form input:not(:disabled):not([readonly]),
+form textarea:not(:disabled):not([readonly]),
+form select:not(:disabled) {
+  pointer-events: auto !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+}
+
+/* NextUI specific fixes */
+[data-slot="input"]:not(:disabled):not([readonly]),
+[data-slot="inner-wrapper"] input:not(:disabled):not([readonly]),
+.nextui-input input:not(:disabled):not([readonly]) {
+  pointer-events: auto !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+  cursor: text !important;
+}
+
+/* Prevent any overlay or pseudo-elements from blocking inputs */
+input:not(:disabled):not([readonly])::before,
+input:not(:disabled):not([readonly])::after,
+textarea:not(:disabled):not([readonly])::before,
+textarea:not(:disabled):not([readonly])::after {
+  pointer-events: none !important;
+}
+
+/* Ensure focus works correctly */
+input:not(:disabled):not([readonly]):focus,
+textarea:not(:disabled):not([readonly]):focus {
+  pointer-events: auto !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+}
+
+/* Debug styles for development */
+.input-debug {
+  outline: 2px solid red !important;
+  background-color: rgba(255, 0, 0, 0.1) !important;
+}
+
+/* Mobile-specific fixes */
+@media (max-width: 768px) {
+  input:not(:disabled):not([readonly]),
+  textarea:not(:disabled):not([readonly]) {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    -webkit-border-radius: 0 !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* Global input field fixes - ensure all inputs are interactive */
+input:not(:disabled):not([readonly]),
+textarea:not(:disabled):not([readonly]),
+select:not(:disabled):not([readonly]) {
+  pointer-events: auto !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+  cursor: text !important;
+  touch-action: manipulation !important;
+}
+
+/* Form library specific fixes */
+[data-slot="input"],
+[data-testid="input"],
+form input:not(:disabled):not([readonly]),
+form textarea:not(:disabled):not([readonly]) {
+  pointer-events: auto !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+  cursor: text !important;
+}
+
+/* React Hook Form specific fixes */
+.react-hook-form input:not(:disabled):not([readonly]),
+.react-hook-form textarea:not(:disabled):not([readonly]) {
+  pointer-events: auto !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+}
+
+/* Enhanced Interactive Element Fixes */
+button:not(:disabled),
+[role="button"]:not(:disabled),
+a:not(:disabled),
+input:not(:disabled):not([readonly]),
+textarea:not(:disabled):not([readonly]),
+select:not(:disabled):not([readonly]) {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+  -moz-user-select: auto !important;
+  -ms-user-select: auto !important;
+  touch-action: manipulation !important;
+}
+
+/* Specific cursor types for different elements */
+input:not(:disabled):not([readonly]),
+textarea:not(:disabled):not([readonly]) {
+  cursor: text !important;
+}
+
+/* Ensure Magic UI components don't interfere with interactions */
+.magic-card button:not(:disabled),
+.magic-card [role="button"]:not(:disabled),
+.magic-card a:not(:disabled),
+.magic-card input:not(:disabled):not([readonly]),
+.magic-card textarea:not(:disabled):not([readonly]),
+.magic-card select:not(:disabled):not([readonly]) {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 30 !important; /* Ensure interactive elements are above overlays */
+}
+
+/* Fix for form elements inside Magic Cards */
+.magic-card form,
+.magic-card [data-slot="input"],
+.magic-card [data-testid="input"] {
+  position: relative;
+  z-index: 25 !important;
+}
+
+/* Ensure all content inside Magic Cards is interactive */
+.magic-card > div:last-child {
+  position: relative;
+  z-index: 20 !important;
+}
+
+/* Magic UI Form Component Styles */
+.magic-input-wrapper,
+.magic-textarea-wrapper {
+  position: relative;
+  z-index: 25 !important;
+}
+
+.magic-input-wrapper input,
+.magic-textarea-wrapper textarea {
+  pointer-events: auto !important;
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
+  cursor: text !important;
+  position: relative;
+  z-index: 30 !important;
+}
+
+.magic-input-wrapper input:disabled,
+.magic-textarea-wrapper textarea:disabled {
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+.magic-input-wrapper input:read-only,
+.magic-textarea-wrapper textarea:read-only {
+  cursor: default !important;
+}
+
+/* Enhanced Magic Input Focus States */
+.magic-input:focus-within {
+  border-color: hsl(var(--primary)/50) !important;
+  box-shadow: 0 0 0 3px hsl(var(--primary)/10), 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--primary)/5) 100%) !important;
+}
+
+/* Magic UI Button Enhancements */
+.magic-button {
+  position: relative;
+  overflow: hidden;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 30 !important;
+}
+
+.magic-button:disabled {
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+}
+
+.magic-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.magic-button:hover::before {
+  left: 100%;
+}
+
+.magic-button:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Ensure button content is above shimmer effect */
+.magic-button > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Dialog and Modal specific fixes */
+[data-radix-dialog-trigger],
+[data-radix-dialog-content],
+[role="dialog"],
+.dialog-trigger,
+.dialog-content {
+  pointer-events: auto !important;
+  z-index: 50 !important;
+}
+
+/* Ensure buttons inside cards are clickable */
+.card button:not(:disabled),
+.card [role="button"]:not(:disabled),
+.card a:not(:disabled) {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  position: relative;
+  z-index: 30 !important;
+}
+
+/* Fix for shadcn/ui components */
+[data-slot="trigger"],
+[data-slot="content"],
+[data-testid="button"],
+.btn,
+.button {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 30 !important;
 }

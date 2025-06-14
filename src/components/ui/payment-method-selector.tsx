@@ -2,9 +2,7 @@
 
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -12,7 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { CreditCard, Smartphone, QrCode, Store, HandCoins } from "lucide-react";
+import { MagicCard, MagicButton } from "~/components/ui/magic-card";
+import { CreditCard, Smartphone, QrCode, Store, HandCoins, Check } from "lucide-react";
 
 export interface PaymentMethodDetails {
   bankCode?: string;
@@ -208,7 +207,7 @@ export function PaymentMethodSelector({
   };
 
   return (
-    <Card>
+    <MagicCard className="bg-gradient-to-br from-background/90 to-muted/20">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           Pilih Metode Pembayaran
@@ -226,29 +225,39 @@ export function PaymentMethodSelector({
         )}
       </CardHeader>
       <CardContent className="space-y-6">
-        <RadioGroup value={selectedMethod} onValueChange={handleMethodChange}>
+        <div className="space-y-4">
           {paymentMethods.map((method) => {
             const Icon = method.icon;
+            const isSelected = selectedMethod === method.id;
             return (
               <div key={method.id} className="space-y-3">
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value={method.id} id={method.id} />
-                  <Label
-                    htmlFor={method.id}
-                    className="flex cursor-pointer items-center space-x-3"
-                  >
+                <MagicCard
+                  className={`cursor-pointer transition-all duration-300 p-4 border-2 ${
+                    isSelected
+                      ? "border-primary bg-primary/5 shadow-lg"
+                      : "border-border/50 hover:border-primary/50"
+                  }`}
+                  onClick={() => handleMethodChange(method.id)}
+                  gradientColor={isSelected ? "rgba(59, 130, 246, 0.15)" : "rgba(255, 255, 255, 0.1)"}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${
+                      isSelected ? "border-primary bg-primary" : "border-border"
+                    }`}>
+                      {isSelected && <Check className="h-3 w-3 text-primary-foreground" />}
+                    </div>
                     <Icon className="h-5 w-5" />
-                    <div>
+                    <div className="flex-1">
                       <div className="font-medium">{method.name}</div>
                       <div className="text-muted-foreground text-sm">
                         {method.description}
                       </div>
                     </div>
-                  </Label>
-                </div>
+                  </div>
+                </MagicCard>
 
                 {selectedMethod === method.id && (
-                  <div className="ml-6 space-y-3">
+                  <div className="mt-4 space-y-3 pl-8">
                     {method.banks && (
                       <div>
                         <Label htmlFor="bank-select">Pilih Bank</Label>
@@ -316,16 +325,18 @@ export function PaymentMethodSelector({
               </div>
             );
           })}
-        </RadioGroup>
+        </div>
 
-        <Button
+        <MagicButton
           onClick={handleProceed}
           disabled={!isFormValid() || isLoading}
           className="w-full"
+          variant="magic"
+          size="lg"
         >
           {isLoading ? "Memproses..." : "Lanjutkan Pembayaran"}
-        </Button>
+        </MagicButton>
       </CardContent>
-    </Card>
+    </MagicCard>
   );
 }

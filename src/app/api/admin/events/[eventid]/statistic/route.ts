@@ -9,7 +9,7 @@ import { UserRole } from "@prisma/client";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ eventid: string }> },
 ) {
   try {
     // Check authentication and authorization
@@ -27,18 +27,25 @@ export async function GET(
         { success: false, error: "Forbidden" },
         { status: 403 },
       );
+    }    const { eventid } = await params;
+    
+    // Validate eventid exists
+    if (!eventid) {
+      return NextResponse.json(
+        { success: false, error: "Event ID is required" },
+        { status: 400 },
+      );
     }
 
-    const { id } = await params;
-    const statistics = await handleGetEventStatistics(id);
+    const statistics = await handleGetEventStatistics(eventid);
 
     return NextResponse.json({
       success: true,
       data: statistics,
     });
   } catch (error: any) {
-    const { id } = await params;
-    console.error(`Error getting statistics for event ${id}:`, error);
+    const { eventid } = await params;
+    console.error(`Error getting statistics for event ${eventid}:`, error);
     return NextResponse.json(
       {
         success: false,

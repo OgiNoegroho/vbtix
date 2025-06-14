@@ -73,7 +73,7 @@ export async function createMockPayment(
 
         Bank: ${params.paymentMethodDetails?.bankCode || "TEST BANK"}
         No. Rekening: 1234567890123456
-        Atas Nama: VBTix Test Account
+        Atas Nama: VBTicket Test Account
         Jumlah: ${params.currency} ${params.amount.toLocaleString("id-ID")}
 
         Kode Referensi: ${params.orderId}

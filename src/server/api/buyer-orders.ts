@@ -9,7 +9,7 @@ export async function handleGetUserOrders(params: {
   userId: string;
   page?: number | string;
   limit?: number | string;
-  status?: PaymentStatus;
+  status?: PaymentStatus | "MANUAL_PENDING";
 }) {
   const { userId, page = 1, limit = 10, status } = params;
 
@@ -25,7 +25,17 @@ export async function handleGetUserOrders(params: {
 
   // Add status filter
   if (status) {
-    where.status = status;
+    if (status === "MANUAL_PENDING") {
+      // Filter for manual payments awaiting verification
+      where.status = "PENDING";
+      where.paymentMethod = "MANUAL_PAYMENT";
+      where.details = {
+        path: ["awaitingVerification"],
+        equals: true,
+      };
+    } else {
+      where.status = status;
+    }
   }
 
   // Get orders with pagination

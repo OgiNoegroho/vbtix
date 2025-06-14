@@ -4,18 +4,20 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useOrganizerEventDetail } from "~/lib/api/hooks/organizer";
 import { OrganizerRoute } from "~/components/auth/organizer-route";
-import { Button } from "~/components/ui/button";
 import {
-  Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { Input } from "~/components/ui/input";
-import { Textarea } from "~/components/ui/textarea";
 import { Label } from "~/components/ui/label";
+import {
+  MagicInput,
+  MagicTextarea,
+  MagicButton,
+  MagicCard,
+} from "~/components/ui/magic-card";
 import {
   AlertCircle,
   ArrowLeft,
@@ -310,13 +312,13 @@ export default function EditEventPage() {
               <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                 <div className="px-4 lg:px-6">
                   <div className="flex items-center gap-2">
-                    <Button
+                    <MagicButton
                       variant="ghost"
                       size="icon"
                       onClick={() => router.back()}
                     >
                       <ArrowLeft className="h-4 w-4" />
-                    </Button>
+                    </MagicButton>
                     <h1 className="text-2xl font-semibold">Edit Event</h1>
                   </div>
                 </div>
@@ -341,13 +343,13 @@ export default function EditEventPage() {
               <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                 <div className="px-4 lg:px-6">
                   <div className="flex items-center gap-2">
-                    <Button
+                    <MagicButton
                       variant="ghost"
                       size="icon"
                       onClick={() => router.back()}
                     >
                       <ArrowLeft className="h-4 w-4" />
-                    </Button>
+                    </MagicButton>
                     <h1 className="text-2xl font-semibold">Edit Event</h1>
                   </div>
                 </div>
@@ -360,16 +362,17 @@ export default function EditEventPage() {
                       "Failed to load event details. Please try again."}
                   </p>
                   <div className="mt-4 flex gap-2">
-                    <Button variant="outline" onClick={() => router.refresh()}>
+                    <MagicButton variant="outline" onClick={() => router.refresh()}>
                       Try Again
-                    </Button>
-                    <Button
+                    </MagicButton>
+                    <MagicButton
                       onClick={() =>
                         router.push(`/organizer/${organizerId}/events`)
                       }
+                      variant="magic"
                     >
                       Back to Events
-                    </Button>
+                    </MagicButton>
                   </div>
                 </div>
               </div>
@@ -405,19 +408,19 @@ export default function EditEventPage() {
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
               <div className="px-4 lg:px-6">
                 <div className="flex items-center gap-2">
-                  <Button
+                  <MagicButton
                     variant="ghost"
                     size="icon"
                     onClick={() => router.back()}
                   >
                     <ArrowLeft className="h-4 w-4" />
-                  </Button>
+                  </MagicButton>
                   <h1 className="text-2xl font-semibold">Edit Event</h1>
                 </div>
               </div>
 
               <div className="px-4 lg:px-6">
-                <Card>
+                <MagicCard className="bg-gradient-to-br from-background/90 to-muted/20">
                   <CardHeader>
                     <CardTitle>Event Details</CardTitle>
                     <CardDescription>
@@ -433,7 +436,7 @@ export default function EditEventPage() {
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="title">Event Title</Label>
-                        <Input
+                        <MagicInput
                           id="title"
                           name="title"
                           value={formData.title}
@@ -444,7 +447,7 @@ export default function EditEventPage() {
 
                       <div className="space-y-2">
                         <Label htmlFor="description">Description</Label>
-                        <Textarea
+                        <MagicTextarea
                           id="description"
                           name="description"
                           value={formData.description}
@@ -458,7 +461,7 @@ export default function EditEventPage() {
                           <Label htmlFor="startDate">Start Date</Label>
                           <div className="flex items-center gap-2">
                             <CalendarDays className="text-muted-foreground h-4 w-4" />
-                            <Input
+                            <MagicInput
                               id="startDate"
                               name="startDate"
                               type="date"
@@ -472,7 +475,7 @@ export default function EditEventPage() {
                           <Label htmlFor="startTime">Start Time</Label>
                           <div className="flex items-center gap-2">
                             <Clock className="text-muted-foreground h-4 w-4" />
-                            <Input
+                            <MagicInput
                               id="startTime"
                               name="startTime"
                               type="time"
@@ -486,7 +489,7 @@ export default function EditEventPage() {
                           <Label htmlFor="endDate">End Date</Label>
                           <div className="flex items-center gap-2">
                             <CalendarDays className="text-muted-foreground h-4 w-4" />
-                            <Input
+                            <MagicInput
                               id="endDate"
                               name="endDate"
                               type="date"
@@ -500,7 +503,7 @@ export default function EditEventPage() {
                           <Label htmlFor="endTime">End Time</Label>
                           <div className="flex items-center gap-2">
                             <Clock className="text-muted-foreground h-4 w-4" />
-                            <Input
+                            <MagicInput
                               id="endTime"
                               name="endTime"
                               type="time"
@@ -517,7 +520,7 @@ export default function EditEventPage() {
                           <Label htmlFor="venue">Venue</Label>
                           <div className="flex items-center gap-2">
                             <MapPin className="text-muted-foreground h-4 w-4" />
-                            <Input
+                            <MagicInput
                               id="venue"
                               name="venue"
                               value={formData.venue}
@@ -528,7 +531,7 @@ export default function EditEventPage() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="city">City</Label>
-                          <Input
+                          <MagicInput
                             id="city"
                             name="city"
                             value={formData.city}
@@ -540,7 +543,7 @@ export default function EditEventPage() {
                       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                           <Label htmlFor="province">Province</Label>
-                          <Input
+                          <MagicInput
                             id="province"
                             name="province"
                             value={formData.province}
@@ -550,7 +553,7 @@ export default function EditEventPage() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="country">Country</Label>
-                          <Input
+                          <MagicInput
                             id="country"
                             name="country"
                             value={formData.country}
@@ -563,7 +566,7 @@ export default function EditEventPage() {
                       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                           <Label htmlFor="category">Category</Label>
-                          <Input
+                          <MagicInput
                             id="category"
                             name="category"
                             value={formData.category}
@@ -601,7 +604,7 @@ export default function EditEventPage() {
                             <ImageIcon className="text-muted-foreground mr-2 h-4 w-4" />
                             Event Images
                           </h3>
-                          <Button
+                          <MagicButton
                             variant="outline"
                             size="sm"
                             onClick={() => setImageDialogOpen(true)}
@@ -609,7 +612,7 @@ export default function EditEventPage() {
                           >
                             <Images className="mr-2 h-4 w-4" />
                             Manage Images
-                          </Button>
+                          </MagicButton>
                         </div>
 
                         <div className="text-muted-foreground text-sm">
@@ -634,20 +637,20 @@ export default function EditEventPage() {
                       </div>
                     </CardContent>
                     <CardFooter className="flex justify-between">
-                      <Button
+                      <MagicButton
                         type="button"
                         variant="outline"
                         onClick={() => router.back()}
                       >
                         Cancel
-                      </Button>
-                      <Button type="submit" disabled={isSubmitting}>
+                      </MagicButton>
+                      <MagicButton type="submit" disabled={isSubmitting} variant="magic">
                         <Save className="mr-2 h-4 w-4" />
                         {isSubmitting ? "Saving..." : "Save Changes"}
-                      </Button>
+                      </MagicButton>
                     </CardFooter>
                   </form>
-                </Card>
+                </MagicCard>
               </div>
             </div>
           </div>

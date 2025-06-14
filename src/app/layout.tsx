@@ -3,7 +3,7 @@ import { Providers } from './providers';
 import '~/styles/globals.css';
 
 export const metadata = {
-  title: 'VBTix - Tiket Konser Online',
+  title: 'VBTicket - Tiket Konser Online',
   description: 'Platform penjualan tiket konser online',
 };
 

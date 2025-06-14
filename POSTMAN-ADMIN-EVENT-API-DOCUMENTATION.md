@@ -1,6 +1,6 @@
-# Dokumentasi API Admin Event VBTix untuk Postman
+# Dokumentasi API Admin Event VBTicket untuk Postman
 
-Dokumen ini berisi panduan untuk menguji endpoint API admin event VBTix menggunakan Postman. Endpoint admin event mencakup operasi untuk melihat daftar event, mengelola event, dan menyetujui/menolak event yang diajukan oleh organizer.
+Dokumen ini berisi panduan untuk menguji endpoint API admin event VBTicket menggunakan Postman. Endpoint admin event mencakup operasi untuk melihat daftar event, mengelola event, dan menyetujui/menolak event yang diajukan oleh organizer.
 
 ## Daftar Endpoint Admin Event
 

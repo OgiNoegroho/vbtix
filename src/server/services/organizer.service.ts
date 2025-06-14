@@ -74,21 +74,35 @@ export const organizerService = {
 
   // Mencari organizer berdasarkan ID user
   async findByUserId(userId: string) {
-    return await prisma.organizer.findUnique({
-      where: { userId },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
+    try {
+      return await prisma.organizer.findUnique({
+        where: { userId },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+            },
           },
+          verification: true,
+          bankAccount: true,
         },
-        verification: true,
-        bankAccount: true,
-      },
-    });
+      });
+    } catch (error: any) {
+      console.error(`Error finding organizer by userId ${userId}:`, error);
+
+      // Re-throw database connectivity errors with more context
+      if (error.code === 'P1001' || error.code === 'P1017') {
+        const dbError = new Error(`Database connection failed: ${error.message}`);
+        dbError.name = 'DatabaseConnectionError';
+        (dbError as any).code = error.code;
+        throw dbError;
+      }
+
+      throw error;
+    }
   },
 
   // Mencari organizer berdasarkan ID user dengan auto-create jika tidak ada

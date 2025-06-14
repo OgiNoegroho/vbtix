@@ -3,10 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -17,6 +15,11 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { AlertCircle, User, Users } from "lucide-react";
+import {
+  MagicInput,
+  MagicCard,
+  MagicButton,
+} from "~/components/ui/magic-card";
 import {
   bulkTicketPurchaseSchema,
   type BulkTicketPurchaseSchema,
@@ -133,7 +136,7 @@ export function TicketPurchaseForm({
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       {/* Buyer Information */}
-      <Card>
+      <MagicCard className="bg-gradient-to-br from-background/90 to-muted/20">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
@@ -144,7 +147,7 @@ export function TicketPurchaseForm({
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <Label htmlFor="buyerInfo.fullName">Nama Lengkap *</Label>
-              <Input
+              <MagicInput
                 id="buyerInfo.fullName"
                 {...register("buyerInfo.fullName")}
                 placeholder="Masukkan nama lengkap"
@@ -186,7 +189,7 @@ export function TicketPurchaseForm({
               <Label htmlFor="buyerInfo.identityNumber">
                 Nomor Identitas *
               </Label>
-              <Input
+              <MagicInput
                 id="buyerInfo.identityNumber"
                 {...register("buyerInfo.identityNumber")}
                 placeholder="Masukkan nomor identitas"
@@ -200,7 +203,7 @@ export function TicketPurchaseForm({
 
             <div>
               <Label htmlFor="buyerInfo.email">Email *</Label>
-              <Input
+              <MagicInput
                 id="buyerInfo.email"
                 type="email"
                 {...register("buyerInfo.email")}
@@ -218,7 +221,7 @@ export function TicketPurchaseForm({
 
             <div className="md:col-span-2">
               <Label htmlFor="buyerInfo.whatsapp">No. WhatsApp *</Label>
-              <Input
+              <MagicInput
                 id="buyerInfo.whatsapp"
                 {...register("buyerInfo.whatsapp")}
                 placeholder="Contoh: 08123456789 atau +6281234567890"
@@ -231,10 +234,10 @@ export function TicketPurchaseForm({
             </div>
           </div>
         </CardContent>
-      </Card>
+      </MagicCard>
 
       {/* Ticket Selection */}
-      <Card>
+      <MagicCard className="bg-gradient-to-br from-background/90 to-muted/20">
         <CardHeader>
           <CardTitle>Pilih Tiket</CardTitle>
         </CardHeader>
@@ -265,7 +268,7 @@ export function TicketPurchaseForm({
 
               <div className="w-24">
                 <Label>Jumlah</Label>
-                <Input
+                <MagicInput
                   type="number"
                   min="1"
                   max="10"
@@ -275,7 +278,7 @@ export function TicketPurchaseForm({
                 />
               </div>
 
-              <Button
+              <MagicButton
                 type="button"
                 variant="outline"
                 size="sm"
@@ -283,13 +286,13 @@ export function TicketPurchaseForm({
                 disabled={itemFields.length === 1}
               >
                 Hapus
-              </Button>
+              </MagicButton>
             </div>
           ))}
 
-          <Button type="button" variant="outline" onClick={addTicketType}>
+          <MagicButton type="button" variant="outline" onClick={addTicketType}>
             Tambah Jenis Tiket
-          </Button>
+          </MagicButton>
 
           {errors.items && (
             <Alert variant="destructive">
@@ -298,11 +301,11 @@ export function TicketPurchaseForm({
             </Alert>
           )}
         </CardContent>
-      </Card>
+      </MagicCard>
 
       {/* Ticket Holders */}
       {totalTickets > 0 && (
-        <Card>
+        <MagicCard className="bg-gradient-to-br from-background/90 to-muted/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
@@ -316,7 +319,7 @@ export function TicketPurchaseForm({
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <Label>Nama Lengkap *</Label>
-                    <Input
+                    <MagicInput
                       {...register(`ticketHolders.${index}.fullName`)}
                       placeholder="Masukkan nama lengkap"
                     />
@@ -353,7 +356,7 @@ export function TicketPurchaseForm({
 
                   <div>
                     <Label>Nomor Identitas *</Label>
-                    <Input
+                    <MagicInput
                       {...register(`ticketHolders.${index}.identityNumber`)}
                       placeholder="Masukkan nomor identitas"
                     />
@@ -366,7 +369,7 @@ export function TicketPurchaseForm({
 
                   <div>
                     <Label>Email *</Label>
-                    <Input
+                    <MagicInput
                       type="email"
                       {...register(`ticketHolders.${index}.email`)}
                       placeholder="Masukkan email"
@@ -380,7 +383,7 @@ export function TicketPurchaseForm({
 
                   <div className="md:col-span-2">
                     <Label>No. WhatsApp *</Label>
-                    <Input
+                    <MagicInput
                       {...register(`ticketHolders.${index}.whatsapp`)}
                       placeholder="Contoh: 08123456789 atau +6281234567890"
                     />
@@ -406,18 +409,19 @@ export function TicketPurchaseForm({
               </Alert>
             )}
           </CardContent>
-        </Card>
+        </MagicCard>
       )}
 
       {/* Submit Button */}
       <div className="flex justify-end">
-        <Button
+        <MagicButton
           type="submit"
           disabled={isLoading || totalTickets === 0}
           size="lg"
+          variant="magic"
         >
           {isLoading ? "Memproses..." : "Lanjut ke Pembayaran"}
-        </Button>
+        </MagicButton>
       </div>
     </form>
   );

@@ -17,7 +17,6 @@ export const ADMIN_ENDPOINTS = {
   DASHBOARD: `${API_BASE}/admin/dashboard`,
   DASHBOARD_ORGANIZERS: `${API_BASE}/admin/dashboard/organizers`,
   DASHBOARD_EVENTS: `${API_BASE}/admin/dashboard/events`,
-
   // Events
   EVENTS: `${API_BASE}/admin/events`,
   EVENT_DETAIL: (id: string) => `${API_BASE}/admin/events/${id}`,
@@ -35,6 +34,9 @@ export const ADMIN_ENDPOINTS = {
   // Users
   USERS: `${API_BASE}/admin/users`,
   USER_DETAIL: (id: string) => `${API_BASE}/admin/users/${id}`,
+
+  // QR Code Management
+  GENERATE_TRANSACTION_QR: (transactionId: string) => `${API_BASE}/admin/transactions/${transactionId}/generate-qr`,
 };
 
 // Organizer endpoints
@@ -54,6 +56,8 @@ export const ORGANIZER_ENDPOINTS = {
     `${API_BASE}/organizer/${organizerId}/events/${id}`,
   DELETE_EVENT: (organizerId: string, id: string) =>
     `${API_BASE}/organizer/${organizerId}/events/${id}`,
+  SUBMIT_EVENT_FOR_REVIEW: (organizerId: string, id: string) =>
+    `${API_BASE}/organizer/${organizerId}/events/${id}/submit`,
 
   // Event Tickets
   EVENT_TICKETS: (organizerId: string, eventId: string) =>
@@ -103,6 +107,22 @@ export const ORGANIZER_ENDPOINTS = {
   // Verification
   VERIFICATION: (organizerId: string) =>
     `${API_BASE}/organizer/${organizerId}/verification`,
+
+  // Sold Tickets Management
+  SOLD_TICKETS: (organizerId: string) =>
+    `${API_BASE}/organizer/${organizerId}/sold-tickets`,
+  SOLD_TICKETS_STATS: (organizerId: string) =>
+    `${API_BASE}/organizer/${organizerId}/sold-tickets/stats`,
+  SOLD_TICKET_DETAIL: (organizerId: string, ticketId: string) =>
+    `${API_BASE}/organizer/${organizerId}/sold-tickets/${ticketId}`,
+  SOLD_TICKET_CHECK_IN: (organizerId: string, ticketId: string) =>
+    `${API_BASE}/organizer/${organizerId}/sold-tickets/${ticketId}/check-in`,
+  SOLD_TICKETS_EXPORT: (organizerId: string) =>
+    `${API_BASE}/organizer/${organizerId}/sold-tickets/export`,
+
+  // QR Code Management
+  QR_CODE_VALIDATE: (organizerId: string) =>
+    `${API_BASE}/organizer/${organizerId}/qr-code/validate`,
 };
 
 // Public endpoints (formerly buyer endpoints)
@@ -111,6 +131,7 @@ export const PUBLIC_ENDPOINTS = {
   EVENT_DETAIL: (eventId: string) => `${API_BASE}/public/events/${eventId}`,
   PURCHASE_TICKET: `${API_BASE}/public/tickets/purchase`,
   CANCEL_TICKET: (id: string) => `${API_BASE}/public/tickets/${id}/cancel`,
+  TICKET_QR_CODE: (ticketId: string) => `${API_BASE}/public/tickets/${ticketId}/qr-code`,
 };
 
 // Buyer endpoints (deprecated - use PUBLIC_ENDPOINTS instead)

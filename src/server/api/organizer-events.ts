@@ -97,6 +97,7 @@ export async function handleGetOrganizerEventById(params: {
 
 /**
  * Create a new event for an organizer
+ * ALL organizer events require admin approval regardless of verification status
  */
 export async function handleCreateOrganizerEvent(params: {
   userId: string;
@@ -110,17 +111,56 @@ export async function handleCreateOrganizerEvent(params: {
     throw new Error("User is not an organizer");
   }
 
-  // Prepare event data
+  // Prepare event data - ALL organizer events start as DRAFT and require approval
   const data = {
     ...eventData,
     organizerId: organizer.id,
-    status: EventStatus.DRAFT,
+    status: EventStatus.DRAFT, // Always DRAFT for organizer events
   };
 
   // Create event
   const event = await eventService.createEvent(data, organizer.id);
 
   return event;
+}
+
+/**
+ * Submit an organizer event for admin review
+ */
+export async function handleSubmitOrganizerEventForReview(params: {
+  userId: string;
+  eventId: string;
+}) {
+  const { userId, eventId } = params;
+
+  if (!eventId) throw new Error("Event ID is required");
+
+  // Check if user is an organizer
+  const organizer = await organizerService.findByUserId(userId);
+  if (!organizer) {
+    throw new Error("User is not an organizer");
+  }
+
+  // Check if event exists and belongs to the organizer
+  const existingEvent = await eventService.findById(eventId);
+  if (!existingEvent) throw new Error("Event not found");
+
+  if (existingEvent.organizerId !== organizer.id) {
+    throw new Error("Event does not belong to this organizer");
+  }
+
+  // Check if event is in DRAFT status
+  if (existingEvent.status !== EventStatus.DRAFT) {
+    throw new Error("Only draft events can be submitted for review");
+  }
+
+  // Submit event for review
+  const updatedEvent = await eventService.submitForReview(eventId);
+
+  return {
+    ...updatedEvent,
+    formattedDate: formatDate(updatedEvent.startDate),
+  };
 }
 
 /**

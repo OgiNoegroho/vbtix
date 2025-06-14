@@ -42,15 +42,16 @@ function isPublicRoute(path: string) {
 }
 
 // Mendapatkan rute dashboard berdasarkan peran pengguna
-function getDashboardRoute(role?: UserRole | string | null, userId?: string) {
+function getDashboardRoute(role?: UserRole | string | null) {
   if (!role) return "/";
 
   switch (role) {
     case UserRole.ADMIN:
       return "/admin";
     case UserRole.ORGANIZER:
-      // If userId is available, redirect to the organizer's dashboard
-      return userId ? `/organizer/${userId}/dashboard` : "/organizer";
+      // For organizers, redirect to the base organizer route
+      // The organizer page will handle fetching the correct organizer ID and redirecting
+      return "/organizer";
     case UserRole.BUYER:
     default:
       return "/";
@@ -104,10 +105,7 @@ export async function authMiddleware(req: NextRequest) {
 
     // Jika pengguna sudah login dan mencoba mengakses halaman publik, alihkan ke dashboard
     if (isPublicRoute(path) && isAuthenticated && token && token.role) {
-      const dashboardRoute = getDashboardRoute(
-        token.role as UserRole,
-        token.id as string,
-      );
+      const dashboardRoute = getDashboardRoute(token.role as UserRole);
       return NextResponse.redirect(new URL(dashboardRoute, req.url));
     }
 
@@ -122,10 +120,7 @@ export async function authMiddleware(req: NextRequest) {
     // Handle /dashboard path
     if (path === "/dashboard") {
       if (isAuthenticated && token && token.role) {
-        const dashboardRoute = getDashboardRoute(
-          token.role as UserRole,
-          token.id as string,
-        );
+        const dashboardRoute = getDashboardRoute(token.role as UserRole);
         return NextResponse.redirect(new URL(dashboardRoute, req.url));
       } else {
         // Redirect to public home page instead of login
@@ -191,7 +186,7 @@ export async function roleMiddleware(
 
     if (!allowedRoles.includes(userRole)) {
       // Redirect to appropriate dashboard based on role
-      const dashboardRoute = getDashboardRoute(userRole, token.id as string);
+      const dashboardRoute = getDashboardRoute(userRole);
       return NextResponse.redirect(new URL(dashboardRoute, req.url));
     }
 

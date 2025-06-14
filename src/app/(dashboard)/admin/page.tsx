@@ -1,17 +1,22 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { AdminRoute } from "~/components/auth/admin-route";
-import { useAdminDashboardRedirect } from "~/lib/hooks/use-dashboard-redirect";
 import { RedirectLoading } from "~/components/ui/redirect-loading";
 
 export default function Page() {
-  // Use the shared redirect hook for consistent behavior
-  useAdminDashboardRedirect();
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to the simplified admin approval dashboard
+    router.replace("/admin/approval");
+  }, [router]);
 
   // Show loading state while redirecting
   return (
     <AdminRoute>
-      <RedirectLoading message="Redirecting to admin dashboard..." />
+      <RedirectLoading message="Redirecting to admin approval dashboard..." />
     </AdminRoute>
   );
 }

@@ -36,7 +36,7 @@ export const TicketDeliveryEmail: React.FC<TicketDeliveryEmailProps> = ({
   event,
   order,
   tickets,
-  companyName = "VBTix"
+  companyName = "VBTicket"
 }) => {
   const formatPrice = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -344,9 +344,8 @@ export const TicketDeliveryEmail: React.FC<TicketDeliveryEmailProps> = ({
               Terima kasih telah menggunakan {companyName}
             </p>
             <p style={{ margin: '0 0 10px 0' }}>
-              Butuh bantuan? Hubungi kami di{' '}
-              <a href="mailto:support@vbtix.com" style={{ color: '#3b82f6' }}>
-                support@vbtix.com
+              Butuh bantuan? Hubungi kami di{' '}              <a href="mailto:support@vbticket.com" style={{ color: '#3b82f6' }}>
+                support@vbticket.com
               </a>
             </p>
             <p style={{ margin: '0' }}>

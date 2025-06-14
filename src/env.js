@@ -24,6 +24,7 @@ export const env = createEnv({
     XENDIT_SECRET_KEY: z.string().optional(),
     XENDIT_WEBHOOK_TOKEN: z.string().optional(),
     CLOUDINARY_API_SECRET: z.string().optional(),
+    QR_CODE_ENCRYPTION_KEY: z.string().min(32).optional(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -63,6 +64,7 @@ export const env = createEnv({
     XENDIT_SECRET_KEY: process.env.XENDIT_SECRET_KEY,
     XENDIT_WEBHOOK_TOKEN: process.env.XENDIT_WEBHOOK_TOKEN,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+    QR_CODE_ENCRYPTION_KEY: process.env.QR_CODE_ENCRYPTION_KEY,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME:
       process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,

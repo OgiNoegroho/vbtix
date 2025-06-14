@@ -1,5 +1,6 @@
 import { ticketService } from "~/server/services/ticket.service";
 import { reservationService } from "~/server/services/reservation.service";
+import { generateTransactionQRCodes } from "~/server/services/ticket-qr.service";
 import { prisma } from "~/server/db";
 import { TicketStatus } from "@prisma/client";
 import { formatDate } from "~/lib/utils";
@@ -609,7 +610,7 @@ export async function handlePurchaseFromReservation(params: {
     // Create a temporary guest user for this purchase
     const guestUser = await prisma.user.create({
       data: {
-        email: `guest_${sessionId}@vbtix.temp`,
+        email: `guest_${sessionId}@vbticket.temp`,
         name: buyerInfo.fullName,
         role: "BUYER",
         // Mark as temporary guest user

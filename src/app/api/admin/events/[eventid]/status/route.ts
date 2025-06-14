@@ -10,7 +10,7 @@ import { eventApprovalSchema } from "~/lib/validations/event.schema";
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ eventid: string }> },
 ) {
   try {
     // Check authentication and authorization
@@ -30,13 +30,22 @@ export async function PUT(
       );
     }
 
-    const { id } = await params;
+    const { eventid } = await params;
+    
+    // Validate eventid exists
+    if (!eventid) {
+      return NextResponse.json(
+        { success: false, error: "Event ID is required" },
+        { status: 400 },
+      );
+    }
+    
     const body = await request.json();
 
     try {
       // Validate input using Zod schema
       const validatedData = eventApprovalSchema.parse({
-        id,
+        id: eventid,
         ...body,
       });
 
@@ -50,16 +59,15 @@ export async function PUT(
       return NextResponse.json({
         success: true,
         data: updatedEvent,
-      });
-    } catch (validationError) {
+      });    } catch (validationError) {
       return NextResponse.json(
         { success: false, error: "Validation error", details: validationError },
         { status: 400 },
       );
     }
   } catch (error: any) {
-    const { id } = await params;
-    console.error(`Error reviewing event ${id}:`, error);
+    const { eventid } = await params;
+    console.error(`Error reviewing event ${eventid}:`, error);
     return NextResponse.json(
       {
         success: false,

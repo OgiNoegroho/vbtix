@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       featured: undefined, // Not relevant for pending events
     };
 
-    console.log("Query params for pending events:", queryParams);
+
 
     // Validate query parameters
     const validatedParams = eventQuerySchema.safeParse(queryParams);

@@ -12,18 +12,16 @@ export const auth = () => getServerSession(authOptions);
 /**
  * Mendapatkan rute dashboard berdasarkan peran pengguna
  */
-export const getDashboardRoute = (
-  role?: UserRole | string | null,
-  userId?: string,
-) => {
+export const getDashboardRoute = (role?: UserRole | string | null) => {
   if (!role) return "/";
 
   switch (role) {
     case UserRole.ADMIN:
       return "/admin/dashboard";
     case UserRole.ORGANIZER:
-      // If userId is available, redirect to the organizer's dashboard
-      return userId ? `/organizer/${userId}/dashboard` : "/organizer";
+      // For organizers, redirect to the base organizer route
+      // The organizer page will handle fetching the correct organizer ID and redirecting
+      return "/organizer";
     case UserRole.BUYER:
     default:
       return "/";

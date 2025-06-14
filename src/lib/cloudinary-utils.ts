@@ -23,7 +23,7 @@ export interface UploadResult {
  */
 export async function uploadImage(
   file: Buffer,
-  folder = "vbtix",
+  folder = "vbticket",
   options: {
     publicId?: string;
     transformation?: Record<string, any>;

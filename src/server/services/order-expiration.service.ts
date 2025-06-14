@@ -68,9 +68,18 @@ export class OrderExpirationService {
           throw new Error(`Order ${orderId} not found`);
         }
 
-        // Only expire pending orders
-        if (!["PENDING", "PENDING_PAYMENT"].includes(order.status)) {
+        // Only expire pending orders, but skip manual payments awaiting verification
+        if (order.status !== "PENDING") {
           console.log(`Order ${orderId} is not pending, skipping expiration`);
+          return null;
+        }
+
+        // Skip manual payments awaiting verification
+        if (order.paymentMethod === "MANUAL_PAYMENT" &&
+            order.details &&
+            typeof order.details === 'object' &&
+            (order.details as any).awaitingVerification) {
+          console.log(`Order ${orderId} is manual payment awaiting verification, skipping expiration`);
           return null;
         }
 

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Sparkles, Shield, Ticket, CreditCard, Bell } from "lucide-react";
 
 export const metadata: Metadata = {
   title: {
-    default: "Autentikasi - VBTix",
-    template: "%s - VBTix",
+    default: "Autentikasi - VBTicket",
+    template: "%s - VBTicket",
   },
-  description: "Autentikasi untuk aplikasi penjualan tiket konser VBTix",
+  description: "Autentikasi untuk aplikasi penjualan tiket konser VBTicket",
 };
 
 export default function AuthLayout({
@@ -15,119 +16,103 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="grid h-screen w-screen overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-50 md:grid-cols-2">
+    <div className="grid h-screen w-screen overflow-hidden bg-gradient-mesh md:grid-cols-2">
       {/* Bagian kiri: Form autentikasi */}
-      <div className="flex items-center justify-center overflow-hidden px-4 py-6 sm:px-6 md:px-8">
-        <div className="w-full max-w-md">
+      <div className="flex items-center justify-center overflow-hidden px-4 py-6 sm:px-6 md:px-8 relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/80 backdrop-blur-sm" />
+        <div className="w-full max-w-md relative z-10">
           {/* Form autentikasi */}
           {children}
         </div>
       </div>
 
       {/* Bagian kanan: Gambar dan informasi */}
-      <div className="hidden bg-gradient-to-br from-blue-800 to-blue-900 text-white md:flex md:flex-col md:justify-between md:overflow-hidden md:p-8">
-        <div className="flex h-full flex-col justify-between">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold">VBTix</h1>
-            <p className="text-base text-blue-100">
-              Platform penjualan tiket konser terpercaya
-            </p>
+      <div className="hidden bg-gradient-brand text-white md:flex md:flex-col md:justify-between md:overflow-hidden md:p-8 relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-secondary/20" />
+        <div className="flex h-full flex-col justify-between relative z-10">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-2xl bg-white/10 backdrop-blur-sm">
+                <Sparkles className="h-8 w-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold">VBTicket</h1>
+                <p className="text-lg text-white/80">
+                  Platform tiket konser terpercaya
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-1 items-center justify-center py-4">
-            <div className="w-full max-w-md rounded-xl bg-white/10 p-5 backdrop-blur-sm">
-              <h2 className="mb-3 text-lg font-bold text-white">Fitur Utama</h2>
-              <ul className="space-y-2">
-                <li className="flex items-start">
-                  <div className="mr-2 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
-                    <svg
-                      className="h-2.5 w-2.5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+          <div className="flex flex-1 items-center justify-center py-8">
+            <div className="w-full max-w-md rounded-2xl bg-white/10 p-8 backdrop-blur-xl border border-white/20 shadow-2xl">
+              <h2 className="mb-6 text-2xl font-bold text-white flex items-center gap-3">
+                <Sparkles className="h-6 w-6" />
+                Fitur Unggulan
+              </h2>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+                    <Shield className="h-5 w-5 text-white" />
                   </div>
-                  <span className="text-sm text-blue-50">
-                    Pembelian tiket yang aman dan mudah
-                  </span>
+                  <div>
+                    <h3 className="font-semibold text-white">Pembelian Aman</h3>
+                    <p className="text-sm text-white/70">
+                      Transaksi terlindungi dengan enkripsi tingkat bank
+                    </p>
+                  </div>
                 </li>
-                <li className="flex items-start">
-                  <div className="mr-2 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
-                    <svg
-                      className="h-2.5 w-2.5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                <li className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+                    <Ticket className="h-5 w-5 text-white" />
                   </div>
-                  <span className="text-sm text-blue-50">
-                    E-ticket yang dapat diakses kapan saja
-                  </span>
+                  <div>
+                    <h3 className="font-semibold text-white">E-Ticket Digital</h3>
+                    <p className="text-sm text-white/70">
+                      Akses tiket kapan saja dengan QR code unik
+                    </p>
+                  </div>
                 </li>
-                <li className="flex items-start">
-                  <div className="mr-2 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
-                    <svg
-                      className="h-2.5 w-2.5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                <li className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+                    <CreditCard className="h-5 w-5 text-white" />
                   </div>
-                  <span className="text-sm text-blue-50">
-                    Berbagai pilihan metode pembayaran
-                  </span>
+                  <div>
+                    <h3 className="font-semibold text-white">Metode Pembayaran</h3>
+                    <p className="text-sm text-white/70">
+                      Berbagai pilihan pembayaran yang mudah dan cepat
+                    </p>
+                  </div>
                 </li>
-                <li className="flex items-start">
-                  <div className="mr-2 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
-                    <svg
-                      className="h-2.5 w-2.5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                <li className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+                    <Bell className="h-5 w-5 text-white" />
                   </div>
-                  <span className="text-sm text-blue-50">
-                    Notifikasi event terbaru
-                  </span>
+                  <div>
+                    <h3 className="font-semibold text-white">Notifikasi Real-time</h3>
+                    <p className="text-sm text-white/70">
+                      Update event terbaru langsung ke perangkat Anda
+                    </p>
+                  </div>
                 </li>
               </ul>
             </div>
           </div>
 
-          <div className="space-y-1 pt-2">
-            <p className="text-xs text-blue-200">
-              &copy; {new Date().getFullYear()} VBTix. Semua hak dilindungi.
+          <div className="space-y-3 pt-4">
+            <p className="text-sm text-white/60">
+              &copy; {new Date().getFullYear()} VBTicket. Semua hak dilindungi.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-6">
               <Link
                 href="/terms"
-                className="text-xs text-blue-200 transition-colors hover:text-white"
+                className="text-sm text-white/60 transition-colors hover:text-white"
               >
                 Syarat dan Ketentuan
               </Link>
               <Link
                 href="/privacy"
-                className="text-xs text-blue-200 transition-colors hover:text-white"
+                className="text-sm text-white/60 transition-colors hover:text-white"
               >
                 Kebijakan Privasi
               </Link>

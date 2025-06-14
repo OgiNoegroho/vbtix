@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     const customFolder = formData.get("folder") as string;
     
     // Use the provided folder or default to profiles folder
-    const folder = customFolder || "vbtix/profiles";
+    const folder = customFolder || "vbticket/profiles";
     
     if (!file) {
       return NextResponse.json(

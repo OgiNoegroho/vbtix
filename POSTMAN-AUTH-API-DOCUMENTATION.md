@@ -1,6 +1,6 @@
-# Dokumentasi API Autentikasi VBTix untuk Postman
+# Dokumentasi API Autentikasi VBTicket untuk Postman
 
-Dokumen ini berisi panduan untuk menguji endpoint API autentikasi VBTix menggunakan Postman. Endpoint autentikasi mencakup pendaftaran, login, verifikasi email, dan reset password.
+Dokumen ini berisi panduan untuk menguji endpoint API autentikasi VBTicket menggunakan Postman. Endpoint autentikasi mencakup pendaftaran, login, verifikasi email, dan reset password.
 
 ## Daftar Endpoint Autentikasi
 
@@ -128,7 +128,7 @@ atau
 
 ## 3. Login - Masuk ke Aplikasi
 
-Untuk login, VBTix menggunakan NextAuth.js. Ada dua cara untuk login:
+Untuk login, VBTicket menggunakan NextAuth.js. Ada dua cara untuk login:
 
 ### 3.1 Login dengan NextAuth.js
 
@@ -424,7 +424,7 @@ atau
 
 4. **Pengujian di Browser**: Cara terbaik untuk menguji autentikasi NextAuth.js adalah melalui browser, karena NextAuth.js dirancang untuk bekerja dengan aplikasi web berbasis browser.
 
-5. **Endpoint Kustom**: Endpoint `/api/auth/register`, `/api/auth/verify`, dan `/api/auth/reset-password` adalah endpoint kustom yang dibuat khusus untuk aplikasi VBTix, bukan bagian dari NextAuth.js.
+5. **Endpoint Kustom**: Endpoint `/api/auth/register`, `/api/auth/verify`, dan `/api/auth/reset-password` adalah endpoint kustom yang dibuat khusus untuk aplikasi VBTicket, bukan bagian dari NextAuth.js.
 
 6. **Environment Variables**: Gunakan Environment Variables di Postman untuk menyimpan nilai seperti CSRF token, URL base, dan informasi lain yang digunakan di beberapa request.
 

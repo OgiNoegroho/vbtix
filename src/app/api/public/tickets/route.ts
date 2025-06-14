@@ -101,11 +101,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse request body
-    const body = await request.json();
-    console.log("Ticket purchase API received:", body);
+    // Parse request body with enhanced error handling
+    let body;
+    try {
+      body = await request.json();
+      console.log("Ticket purchase API received:", body);
+    } catch (parseError) {
+      console.error("Failed to parse request body:", parseError);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid JSON in request body",
+        },
+        { status: 400 },
+      );
+    }
 
-    // Validate request body
+    // Validate request body with detailed error reporting
     const validatedData = ticketPurchaseSchema.safeParse(body);
 
     if (!validatedData.success) {
@@ -113,11 +125,19 @@ export async function POST(request: NextRequest) {
         "Ticket purchase validation error:",
         validatedData.error.format(),
       );
+
+      // Extract specific error messages for better user feedback
+      const errorMessages = validatedData.error.errors.map(err => ({
+        field: err.path.join('.'),
+        message: err.message,
+      }));
+
       return NextResponse.json(
         {
           success: false,
           error: "Validation error",
           details: validatedData.error.format(),
+          messages: errorMessages,
         },
         { status: 400 },
       );

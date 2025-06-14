@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -92,31 +92,69 @@ export function useOrganizerDashboardRedirect(organizerId: string) {
 
 /**
  * Hook for organizer redirect with session-based ID resolution
+ * This hook fetches the actual organizer ID and redirects to the correct URL
  */
 export function useOrganizerRedirectWithSession() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  
+  const [organizerId, setOrganizerId] = useState<string | null>(null);
+  const [isLoadingOrganizer, setIsLoadingOrganizer] = useState(false);
+
   const isLoading = status === "loading";
   const isAuthenticated = status === "authenticated";
 
+  // Fetch organizer ID when session is available
   useEffect(() => {
-    // Don't redirect while session is still loading
-    if (isLoading) return;
+    const fetchOrganizerId = async () => {
+      if (!isAuthenticated || !session?.user?.id || isLoadingOrganizer) return;
 
-    if (isAuthenticated && session?.user?.id) {
-      // If user is logged in and has an organizerId, redirect to their dashboard
-      router.replace(`/organizer/${session.user.id}/dashboard`);
-    } else {
-      // If not logged in, redirect to login
-      router.replace("/login");
+      try {
+        setIsLoadingOrganizer(true);
+
+        // Fetch organizer data to get the actual organizer ID
+        const response = await fetch('/api/organizer/profile');
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data?.id) {
+            setOrganizerId(data.data.id);
+          } else {
+            console.error('No organizer profile found');
+            router.replace('/login');
+          }
+        } else {
+          console.error('Failed to fetch organizer profile');
+          router.replace('/login');
+        }
+      } catch (error) {
+        console.error('Error fetching organizer profile:', error);
+        router.replace('/login');
+      } finally {
+        setIsLoadingOrganizer(false);
+      }
+    };
+
+    fetchOrganizerId();
+  }, [isAuthenticated, session?.user?.id, router, isLoadingOrganizer]);
+
+  // Redirect when organizer ID is available
+  useEffect(() => {
+    if (!isLoading && !isLoadingOrganizer) {
+      if (isAuthenticated && organizerId) {
+        // Redirect to the correct organizer dashboard with actual organizer ID
+        router.replace(`/organizer/${organizerId}/dashboard`);
+      } else if (!isAuthenticated) {
+        // If not logged in, redirect to login
+        router.replace("/login");
+      }
     }
-  }, [isLoading, isAuthenticated, session?.user?.id, router]);
+  }, [isLoading, isLoadingOrganizer, isAuthenticated, organizerId, router]);
 
   return {
-    isLoading,
+    isLoading: isLoading || isLoadingOrganizer,
     isAuthenticated,
     session,
-    isRedirecting: !isLoading
+    organizerId,
+    isRedirecting: !isLoading && !isLoadingOrganizer
   };
 }

@@ -1,6 +1,6 @@
-# Alur Data Fetching dengan SWR dalam Aplikasi VBTix
+# Alur Data Fetching dengan SWR dalam Aplikasi VBTicket
 
-Dokumen ini menjelaskan alur lengkap bagaimana data mengalir dalam aplikasi VBTix menggunakan SWR, dari frontend hingga backend.
+Dokumen ini menjelaskan alur lengkap bagaimana data mengalir dalam aplikasi VBTicket menggunakan SWR, dari frontend hingga backend.
 
 ## Daftar Isi
 
@@ -450,7 +450,7 @@ export function useEventsInfinite() {
 
 ## Kesimpulan
 
-Alur data fetching dengan SWR dalam aplikasi VBTix mengikuti pola yang konsisten:
+Alur data fetching dengan SWR dalam aplikasi VBTicket mengikuti pola yang konsisten:
 
 1. **Komponen** memanggil **custom hook SWR**
 2. **Custom hook** menggunakan **useSWR** dengan endpoint dan fetcher

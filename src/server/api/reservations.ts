@@ -100,6 +100,8 @@ export async function handleGetActiveReservations(params: {
     sessionId,
   });
 
+  console.log(`Retrieved ${reservations.length} reservations for session ${sessionId}`);
+
   // Add remaining time for each reservation
   const reservationsWithTimer = reservations.map((reservation) => {
     const remainingSeconds = Math.max(
@@ -113,17 +115,22 @@ export async function handleGetActiveReservations(params: {
     };
   });
 
+  // Filter out expired reservations
+  const activeReservations = reservationsWithTimer.filter(r => !r.isExpired);
+
+  console.log(`Returning ${activeReservations.length} active reservations (filtered out ${reservationsWithTimer.length - activeReservations.length} expired)`);
+
   // Apply pagination
   const skip = (page - 1) * limit;
-  const paginatedReservations = reservationsWithTimer.slice(skip, skip + limit);
+  const paginatedReservations = activeReservations.slice(skip, skip + limit);
 
   return {
     reservations: paginatedReservations,
     meta: {
       page,
       limit,
-      total: reservations.length,
-      totalPages: Math.ceil(reservations.length / limit),
+      total: activeReservations.length,
+      totalPages: Math.ceil(activeReservations.length / limit),
     },
   };
 }
@@ -264,22 +271,38 @@ export async function handleBulkCreateReservations(params: {
   const createdReservations = [];
   const errors = [];
 
+  console.log(`Creating ${reservations.length} reservations for session ${sessionId}`);
+
   for (const reservationData of reservations) {
     try {
+      console.log(`Creating reservation for ticket type ${reservationData.ticketTypeId}, quantity: ${reservationData.quantity}`);
+
       const reservation = await reservationService.createReservation({
         sessionId,
         ticketTypeId: reservationData.ticketTypeId,
         quantity: reservationData.quantity,
         expirationMinutes,
       });
+
+      console.log(`Successfully created reservation:`, {
+        id: reservation.id,
+        status: reservation.status,
+        expiresAt: reservation.expiresAt,
+        ticketTypeId: reservation.ticketTypeId,
+        quantity: reservation.quantity
+      });
+
       createdReservations.push(reservation);
     } catch (error: any) {
+      console.error(`Failed to create reservation for ticket type ${reservationData.ticketTypeId}:`, error.message);
       errors.push({
         ticketTypeId: reservationData.ticketTypeId,
         error: error.message,
       });
     }
   }
+
+  console.log(`Bulk reservation completed: ${createdReservations.length} successful, ${errors.length} failed`);
 
   return {
     successful: createdReservations,

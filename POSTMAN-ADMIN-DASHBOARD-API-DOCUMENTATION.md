@@ -1,6 +1,6 @@
-# Dokumentasi API Dashboard Admin VBTix untuk Postman
+# Dokumentasi API Dashboard Admin VBTicket untuk Postman
 
-Dokumen ini berisi panduan untuk menguji endpoint API dashboard admin VBTix menggunakan Postman. Endpoint dashboard admin mencakup operasi untuk mendapatkan statistik dan data untuk dashboard admin.
+Dokumen ini berisi panduan untuk menguji endpoint API dashboard admin VBTicket menggunakan Postman. Endpoint dashboard admin mencakup operasi untuk mendapatkan statistik dan data untuk dashboard admin.
 
 ## Daftar Endpoint Dashboard Admin
 

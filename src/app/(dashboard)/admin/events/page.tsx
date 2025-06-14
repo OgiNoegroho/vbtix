@@ -3,14 +3,15 @@
 import * as React from "react";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import {
-  Calendar,
-  MapPin,
   Search,
-  Tag,
   Loader2,
   AlertCircle,
   Plus,
+  Clock,
+  CheckCircle2,
+  Users,
 } from "lucide-react";
 import { Input } from "~/components/ui/input";
 import {
@@ -20,19 +21,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
-import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { AdminRoute } from "~/components/auth/admin-route";
-
+import { AdminEventCard } from "~/components/dashboard/admin/admin-event-card";
+import { ApprovalSummaryCard } from "~/components/dashboard/admin/approval-summary-card";
+import { QuickActionsCard } from "~/components/dashboard/admin/quick-actions-card";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 
 // Interface untuk event yang sesuai dengan data API
@@ -74,6 +68,7 @@ interface Event {
 }
 
 export default function AdminEventsPage() {
+  const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -105,6 +100,52 @@ export default function AdminEventsPage() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  // State for approval summary - using only reliable statistics
+  const [approvalStats, setApprovalStats] = useState({
+    pendingCount: 0,
+    totalApproved: 0,
+    totalRejected: 0,
+    totalEvents: 0,
+    approvalRate: 0,
+    averageApprovalTime: "0h",
+    isDataConsistent: true,
+  });
+
+  // State for quick actions data
+  const [quickActionsData, setQuickActionsData] = useState({
+    totalEvents: 0,
+    totalOrganizers: 0,
+  });
+  // Function to fetch approval statistics
+  const fetchApprovalStats = useCallback(async () => {
+    try {
+      const response = await fetch("/api/admin/events/approval?includeStats=true");
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Fetched approval stats response:", data);
+
+        if (data.success && data.data && data.data.statistics) {
+          const stats = data.data.statistics;
+          console.log("Processing statistics:", stats);
+
+          setApprovalStats({
+            pendingCount: stats.totalPending || 0,
+            totalApproved: stats.totalApproved || 0,
+            totalRejected: stats.totalRejected || 0,
+            totalEvents: stats.totalEvents || 0,
+            approvalRate: stats.approvalRate || 0,
+            averageApprovalTime: `${stats.averageApprovalTimeHours || 0}h`,
+            isDataConsistent: stats.dataConsistency?.isConsistent ?? true,
+          });
+        } else {
+          console.warn("No statistics found in response:", data);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching approval stats:", err);
+    }
+  }, []);
 
   // Function to fetch events
   const fetchEvents = useCallback(async () => {
@@ -162,24 +203,13 @@ export default function AdminEventsPage() {
   // Fetch events when dependencies change
   useEffect(() => {
     fetchEvents();
-  }, [fetchEvents]);
-
+    fetchApprovalStats();
+  }, [fetchEvents, fetchApprovalStats]);
   // Function to mutate (refresh) data
   const mutate = useCallback(() => {
     fetchEvents();
-  }, [fetchEvents]);
-
-  // Format tanggal
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+    fetchApprovalStats();
+  }, [fetchEvents, fetchApprovalStats]);
 
   return (
     <AdminRoute>
@@ -187,9 +217,9 @@ export default function AdminEventsPage() {
         <div className="px-4 lg:px-6">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <h1 className="text-3xl font-bold">Events</h1>
+              <h1 className="text-3xl font-bold">Event Management</h1>
               <p className="text-muted-foreground">
-                Kelola semua event yang ada di platform
+                Kelola event admin dan review pengajuan organizer
               </p>
             </div>
 
@@ -227,6 +257,31 @@ export default function AdminEventsPage() {
 
             <Separator />
 
+            {/* Dashboard Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+              <div className="lg:col-span-2">
+                <ApprovalSummaryCard
+                  pendingCount={approvalStats.pendingCount}
+                  totalApproved={approvalStats.totalApproved}
+                  totalRejected={approvalStats.totalRejected}
+                  totalEvents={approvalStats.totalEvents}
+                  approvalRate={approvalStats.approvalRate}
+                  averageApprovalTime={approvalStats.averageApprovalTime}
+                  isDataConsistent={approvalStats.isDataConsistent}
+                  isLoading={isLoading}
+                  error={error}
+                />
+              </div>
+              <div>
+                <QuickActionsCard
+                  pendingCount={approvalStats.pendingCount}
+                  totalEvents={meta?.total || 0}
+                  totalOrganizers={quickActionsData.totalOrganizers}
+                  isLoading={isLoading}
+                />
+              </div>
+            </div>
+
             {isLoading ? (
               <div className="flex items-center justify-center py-10">
                 <Loader2 className="text-primary h-8 w-8 animate-spin" />
@@ -249,8 +304,7 @@ export default function AdminEventsPage() {
                 </AlertDescription>
               </Alert>
             ) : (
-              <>
-                <div className="mb-6 flex flex-col gap-4">
+              <>                <div className="mb-6 flex flex-col gap-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <h2 className="text-xl font-semibold">Daftar Event</h2>
@@ -260,12 +314,26 @@ export default function AdminEventsPage() {
                           : "Tidak ada event"}
                       </p>
                     </div>
-                    <Link href="/admin/events/create">
-                      <Button>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Tambah Event
-                      </Button>
-                    </Link>
+                    <div className="flex gap-2">
+                      <Link href="/admin/approval">
+                        <Button variant="default">
+                          <CheckCircle2 className="mr-2 h-4 w-4" />
+                          Review Pengajuan
+                        </Button>
+                      </Link>
+                      <Link href="/admin/events/pending">
+                        <Button variant="outline">
+                          <Clock className="mr-2 h-4 w-4" />
+                          Event Pending
+                        </Button>
+                      </Link>
+                      <Link href="/admin/events/create">
+                        <Button variant="outline">
+                          <Plus className="mr-2 h-4 w-4" />
+                          Tambah Event Admin
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
 
                   {/* Status summary badges
@@ -332,51 +400,15 @@ export default function AdminEventsPage() {
                       Cancelled
                     </Badge>
                   </div> */}
-                </div>
-
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                </div>                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {events && events.length > 0 ? (
                     events.map((event: Event) => (
-                      <Link href={`/admin/events/${event.id}`} key={event.id}>
-                        <Card className="h-full cursor-pointer transition-all hover:shadow-md">
-                          <CardHeader className="relative">
-                            <div className="absolute top-6 right-6">
-                              <StatusBadge status={event.status} />
-                            </div>
-                            <CardTitle className="line-clamp-2">
-                              {event.title}
-                            </CardTitle>
-                            <CardDescription className="line-clamp-2">
-                              {event.description}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="flex flex-col gap-4">
-                            <div className="flex items-start gap-2">
-                              <Calendar className="text-muted-foreground mt-0.5 h-4 w-4" />
-                              <span>{formatDate(event.startDate)}</span>
-                            </div>
-                            <div className="flex items-start gap-2">
-                              <MapPin className="text-muted-foreground mt-0.5 h-4 w-4" />
-                              <span>
-                                {event.venue}
-                                {event.city && `, ${event.city}`}
-                                {event.province && `, ${event.province}`}
-                              </span>
-                            </div>
-                            {event.category && (
-                              <div className="flex items-start gap-2">
-                                <Tag className="text-muted-foreground mt-0.5 h-4 w-4" />
-                                <span>{event.category}</span>
-                              </div>
-                            )}
-                          </CardContent>
-                          <CardFooter>
-                            <Button variant="outline" className="w-full">
-                              Lihat Detail
-                            </Button>
-                          </CardFooter>
-                        </Card>
-                      </Link>
+                      <AdminEventCard
+                        key={event.id}
+                        event={event}
+                        onStatusUpdate={mutate}
+                        currentUserId={session?.user?.id}
+                      />
                     ))
                   ) : (
                     <div className="col-span-full flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-8 text-center">
@@ -514,38 +546,6 @@ export default function AdminEventsPage() {
             )}
           </div>
         </div>
-      </div>
-    </AdminRoute>
+      </div>    </AdminRoute>
   );
-}
-
-interface StatusBadgeProps {
-  status: string;
-}
-
-function StatusBadge({ status }: StatusBadgeProps) {
-  const statusConfig: Record<
-    string,
-    {
-      label: string;
-      variant:
-        | "default"
-        | "outline"
-        | "secondary"
-        | "destructive"
-        | "success"
-        | "warning";
-    }
-  > = {
-    DRAFT: { label: "Draft", variant: "outline" },
-    PENDING_REVIEW: { label: "Pending Review", variant: "warning" },
-    PUBLISHED: { label: "Published", variant: "success" },
-    REJECTED: { label: "Rejected", variant: "destructive" },
-    COMPLETED: { label: "Completed", variant: "secondary" },
-    CANCELLED: { label: "Cancelled", variant: "destructive" },
-  };
-
-  const config = statusConfig[status] || { label: status, variant: "default" };
-
-  return <Badge variant={config.variant}>{config.label}</Badge>;
 }

@@ -36,6 +36,9 @@ import {
   Images,
   Loader2,
   CheckCircle,
+  Send,
+  AlertTriangle,
+  XCircle,
 } from "lucide-react";
 import { formatDate, formatPrice } from "~/lib/utils";
 import { EventStatus } from "@prisma/client";
@@ -76,6 +79,9 @@ export default function EventDetailPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
+  // State for submit for review
+  const [isSubmittingForReview, setIsSubmittingForReview] = useState(false);
+
   // Fetch event details
   const { data, isLoading, error, mutate } = useOrganizerEventDetail(
     organizerId,
@@ -109,6 +115,48 @@ export default function EventDetailPage() {
   const typedSalesData = salesData as
     | { success: boolean; data: SalesResponse; error?: string }
     | undefined;
+
+  // Handle submit for review
+  const handleSubmitForReview = async () => {
+    setIsSubmittingForReview(true);
+
+    try {
+      const response = await fetch(
+        ORGANIZER_ENDPOINTS.SUBMIT_EVENT_FOR_REVIEW(organizerId, eventId),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to submit event for review");
+      }
+
+      // Show success toast notification
+      toast.success("Event submitted for review", {
+        description: "Your event has been submitted for admin approval.",
+        icon: <CheckCircle className="h-4 w-4 text-green-500" />,
+      });
+
+      // Refresh the event data
+      mutate();
+    } catch (error: any) {
+      console.error("Error submitting event for review:", error);
+
+      // Show error toast notification
+      toast.error("Error submitting event", {
+        description: error.message || "Failed to submit event for review. Please try again.",
+        icon: <AlertCircle className="h-4 w-4 text-red-500" />,
+      });
+    } finally {
+      setIsSubmittingForReview(false);
+    }
+  };
 
   // Handle delete event
   const handleDeleteEvent = async () => {
@@ -397,23 +445,99 @@ export default function EventDetailPage() {
                   </div>
 
                   <div>
-                    <h3 className="font-medium">Status</h3>
-                    <Badge
-                      variant={
-                        event.status === EventStatus.PUBLISHED
-                          ? "success"
-                          : event.status === EventStatus.DRAFT
-                            ? "outline"
-                            : "destructive"
-                      }
-                      className="mt-1"
-                    >
-                      {event.status === EventStatus.PUBLISHED
-                        ? "Published"
-                        : event.status === EventStatus.DRAFT
-                          ? "Draft"
-                          : "Cancelled"}
-                    </Badge>
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-medium">Status</h3>
+                      {event.status === EventStatus.DRAFT && (
+                        <Button
+                          size="sm"
+                          onClick={handleSubmitForReview}
+                          disabled={isSubmittingForReview}
+                        >
+                          {isSubmittingForReview ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Submitting...
+                            </>
+                          ) : (
+                            <>
+                              <Send className="mr-2 h-4 w-4" />
+                              Submit for Review
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <Badge
+                        variant={
+                          event.status === EventStatus.PUBLISHED
+                            ? "success"
+                            : event.status === EventStatus.DRAFT
+                              ? "outline"
+                              : event.status === EventStatus.PENDING_REVIEW
+                                ? "secondary"
+                                : event.status === EventStatus.REJECTED
+                                  ? "destructive"
+                                  : "outline"
+                        }
+                        className="mt-1"
+                      >
+                        {event.status === EventStatus.PUBLISHED && (
+                          <>
+                            <CheckCircle className="mr-1 h-3 w-3" />
+                            Published
+                          </>
+                        )}
+                        {event.status === EventStatus.DRAFT && (
+                          <>
+                            <AlertTriangle className="mr-1 h-3 w-3" />
+                            Draft
+                          </>
+                        )}
+                        {event.status === EventStatus.PENDING_REVIEW && (
+                          <>
+                            <Clock className="mr-1 h-3 w-3" />
+                            Pending Review
+                          </>
+                        )}
+                        {event.status === EventStatus.REJECTED && (
+                          <>
+                            <XCircle className="mr-1 h-3 w-3" />
+                            Rejected
+                          </>
+                        )}
+                        {event.status === EventStatus.CANCELLED && (
+                          <>
+                            <XCircle className="mr-1 h-3 w-3" />
+                            Cancelled
+                          </>
+                        )}
+                      </Badge>
+                    </div>
+
+                    {/* Status descriptions */}
+                    <div className="mt-2">
+                      {event.status === EventStatus.DRAFT && (
+                        <p className="text-sm text-amber-600">
+                          Your event is saved as a draft. Submit it for admin review to publish.
+                        </p>
+                      )}
+                      {event.status === EventStatus.PENDING_REVIEW && (
+                        <p className="text-sm text-blue-600">
+                          Your event is under admin review. You'll be notified once it's approved or if changes are needed.
+                        </p>
+                      )}
+                      {event.status === EventStatus.PUBLISHED && (
+                        <p className="text-sm text-green-600">
+                          Your event is live and visible to the public.
+                        </p>
+                      )}
+                      {event.status === EventStatus.REJECTED && (
+                        <p className="text-sm text-red-600">
+                          Your event was rejected. Please review admin feedback and resubmit.
+                        </p>
+                      )}
+                    </div>
                   </div>
 
                   <div>

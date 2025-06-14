@@ -15,7 +15,7 @@ const reviewSchema = z.object({
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ eventid: string }> },
 ) {
   try {
     // Check authentication and authorization
@@ -35,15 +35,22 @@ export async function POST(
       );
     }
 
-    const { id } = await params;
-    const body = await request.json();
-
-    try {
+    const { eventid } = await params;
+    
+    // Validate eventid exists
+    if (!eventid) {
+      return NextResponse.json(
+        { success: false, error: "Event ID is required" },
+        { status: 400 },
+      );
+    }
+    
+    const body = await request.json();    try {
       // Validate input
       const { status, feedback } = reviewSchema.parse(body);
 
       // Review event
-      const result = await handleReviewEvent(id, status, feedback);
+      const result = await handleReviewEvent(eventid, status, feedback);
 
       return NextResponse.json({
         success: true,
@@ -56,8 +63,8 @@ export async function POST(
       );
     }
   } catch (error: any) {
-    const { id } = await params;
-    console.error(`Error reviewing event ${id}:`, error);
+    const { eventid } = await params;
+    console.error(`Error reviewing event ${eventid}:`, error);
     return NextResponse.json(
       {
         success: false,

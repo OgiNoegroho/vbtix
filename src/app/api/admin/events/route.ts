@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleGetEvents, handleCreateEvent } from "~/server/api/events";
+import { handleGetEvents } from "~/server/api/events";
+import { handleCreateAdminEvent } from "~/server/api/admin-events";
 import { auth } from "~/server/auth";
 import { UserRole } from "@prisma/client";
 import {
@@ -126,8 +127,8 @@ export async function POST(request: NextRequest) {
       // Validate input using Zod schema
       const validatedData = createEventSchema.parse(body);
 
-      // Call business logic
-      const event = await handleCreateEvent(validatedData, session.user.id);
+      // Call admin event creation logic (bypasses approval workflow)
+      const event = await handleCreateAdminEvent(validatedData, session.user.id);
 
       // Return response
       return NextResponse.json({

@@ -1,6 +1,6 @@
 # Dokumentasi Alur Fetching Data
 
-Dokumen ini menjelaskan alur fetching data dari frontend ke backend dalam aplikasi VBTix, termasuk implementasi SWR, struktur API, dan best practices.
+Dokumen ini menjelaskan alur fetching data dari frontend ke backend dalam aplikasi VBTicket, termasuk implementasi SWR, struktur API, dan best practices.
 
 ## Struktur Direktori
 

@@ -1,65 +1,61 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { PaymentStatus } from "@prisma/client";
 import { OrganizerRoute } from "~/components/auth/organizer-route";
 import { OrganizerPageWrapper } from "~/components/dashboard/organizer/organizer-page-wrapper";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
-import { 
-  Search, 
-  Filter, 
-  Eye, 
-  CheckCircle, 
-  XCircle, 
+  Search,
+  Eye,
+  CheckCircle,
+  XCircle,
   Clock,
-  AlertCircle,
-  Loader2
+  Loader2,
+  Plus,
+  QrCode
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatPrice } from "~/lib/utils";
+import { useOrganizerQRGeneration } from "~/lib/api/hooks/qr-code";
 
 interface Order {
   id: string;
   invoiceNumber: string;
   amount: number;
   status: PaymentStatus;
+  paymentMethod?: string;
+  details?: any;
   createdAt: string;
+  formattedCreatedAt?: string;
   user: {
     id: string;
     name: string;
     email: string;
+    phone?: string;
   };
   event: {
     id: string;
     title: string;
+    startDate?: string;
+    formattedStartDate?: string;
+    venue?: string;
   };
   orderItems: Array<{
     id: string;
     quantity: number;
+    price?: number;
+    subtotal?: number;
     ticketType: {
       id: string;
       name: string;
+      price?: number;
     };
   }>;
   buyerInfo?: {
@@ -71,16 +67,19 @@ interface Order {
 
 export default function OrganizerOrdersPage() {
   const params = useParams();
-  const { data: session } = useSession();
+  const router = useRouter();
   const organizerId = params.id as string;
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<PaymentStatus | "ALL">("ALL");
+  const [currentStatus, setCurrentStatus] = useState<PaymentStatus | "ALL" | "MANUAL_PENDING">("MANUAL_PENDING");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [processingOrderId, setProcessingOrderId] = useState<string | null>(null);
+  const [generatingQROrderId, setGeneratingQROrderId] = useState<string | null>(null);
+
+  const { generateOrderQRCodes } = useOrganizerQRGeneration();
 
   // Fetch orders
   const fetchOrders = async () => {
@@ -89,7 +88,7 @@ export default function OrganizerOrdersPage() {
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: "10",
-        ...(statusFilter !== "ALL" && { status: statusFilter }),
+        ...(currentStatus !== "ALL" && { status: currentStatus }),
         ...(searchTerm && { search: searchTerm }),
       });
 
@@ -110,56 +109,9 @@ export default function OrganizerOrdersPage() {
     }
   };
 
-  // Update order status
-  const updateOrderStatus = async (orderId: string, status: PaymentStatus) => {
-    try {
-      setProcessingOrderId(orderId);
-      
-      const response = await fetch(`/api/organizer/${organizerId}/orders/${orderId}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status }),
-      });
 
-      const result = await response.json();
 
-      if (result.success) {
-        toast.success(
-          status === "SUCCESS" 
-            ? "Payment approved! Tickets sent to customer." 
-            : "Payment rejected."
-        );
-        fetchOrders(); // Refresh the list
-      } else {
-        toast.error(result.error || "Failed to update order status");
-      }
-    } catch (error) {
-      console.error("Error updating order status:", error);
-      toast.error("Failed to update order status");
-    } finally {
-      setProcessingOrderId(null);
-    }
-  };
 
-  // Get status badge
-  const getStatusBadge = (status: PaymentStatus) => {
-    switch (status) {
-      case "PENDING":
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Menunggu Pembayaran</Badge>;
-      case "PENDING_PAYMENT":
-        return <Badge variant="secondary" className="bg-orange-100 text-orange-800">Menunggu Konfirmasi</Badge>;
-      case "SUCCESS":
-        return <Badge variant="secondary" className="bg-green-100 text-green-800">Lunas</Badge>;
-      case "FAILED":
-        return <Badge variant="secondary" className="bg-red-100 text-red-800">Gagal</Badge>;
-      case "EXPIRED":
-        return <Badge variant="secondary" className="bg-gray-100 text-gray-800">Kadaluarsa</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
-  };
 
   // Format date
   const formatDate = (dateString: string) => {
@@ -174,170 +126,257 @@ export default function OrganizerOrdersPage() {
 
   useEffect(() => {
     fetchOrders();
-  }, [currentPage, statusFilter, searchTerm]);
+  }, [currentPage, currentStatus, searchTerm]);
+
+  // Verify manual payment (approve/reject)
+  const verifyManualPayment = async (orderId: string, status: PaymentStatus, notes?: string) => {
+    try {
+      setProcessingOrderId(orderId);
+
+      const response = await fetch(`/api/organizer/${organizerId}/orders/${orderId}/verify`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status, notes }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success(result.message);
+        fetchOrders(); // Refresh the list
+      } else {
+        toast.error(result.error || "Failed to verify payment");
+      }
+    } catch (error) {
+      console.error("Error verifying payment:", error);
+      toast.error("Failed to verify payment");
+    } finally {
+      setProcessingOrderId(null);
+    }
+  };
+
+  // Generate QR codes for an order
+  const generateQRCodes = async (orderId: string) => {
+    try {
+      setGeneratingQROrderId(orderId);
+
+      const result = await generateOrderQRCodes(organizerId, orderId);
+
+      if (result.success) {
+        toast.success(`Successfully generated ${result.data.generatedCount} QR codes`);
+        fetchOrders(); // Refresh the list
+      } else {
+        toast.error(result.error || "Failed to generate QR codes");
+      }
+    } catch (error) {
+      console.error("Error generating QR codes:", error);
+      toast.error("Failed to generate QR codes");
+    } finally {
+      setGeneratingQROrderId(null);
+    }
+  };
+
+  // Get status badge
+  const getStatusBadge = (status: PaymentStatus, paymentMethod?: string, details?: any) => {
+    if (status === PaymentStatus.PENDING && paymentMethod === "MANUAL_PAYMENT" && details?.awaitingVerification) {
+      return <Badge className="bg-orange-500">Menunggu Konfirmasi</Badge>;
+    }
+
+    switch (status) {
+      case PaymentStatus.PENDING:
+        return <Badge variant="outline">Menunggu Pembayaran</Badge>;
+      case PaymentStatus.SUCCESS:
+        return <Badge className="bg-green-600">Lunas</Badge>;
+      case PaymentStatus.FAILED:
+        return <Badge variant="destructive">Gagal</Badge>;
+      case PaymentStatus.EXPIRED:
+        return <Badge variant="secondary">Kadaluarsa</Badge>;
+      case PaymentStatus.REFUNDED:
+        return <Badge className="bg-blue-500">Dikembalikan</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
 
   return (
     <OrganizerRoute>
       <OrganizerPageWrapper>
         <div className="space-y-6">
           {/* Header */}
-          <div>
-            <h1 className="text-3xl font-bold">Kelola Pesanan</h1>
-            <p className="text-muted-foreground">
-              Kelola pesanan tiket dan konfirmasi pembayaran manual
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Kelola Pesanan</h1>
+              <p className="text-muted-foreground">
+                Kelola pesanan tiket dan konfirmasi pembayaran manual
+              </p>
+            </div>
+            <Button
+              onClick={() => router.push(`/organizer/${organizerId}/orders/create`)}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Buat Pesanan
+            </Button>
           </div>
 
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="h-5 w-5" />
-                Filter Pesanan
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col gap-4 md:flex-row">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      placeholder="Cari berdasarkan invoice, nama, atau email..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <Select
-                  value={statusFilter}
-                  onValueChange={(value) => setStatusFilter(value as PaymentStatus | "ALL")}
-                >
-                  <SelectTrigger className="w-full md:w-[200px]">
-                    <SelectValue placeholder="Filter Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ALL">Semua Status</SelectItem>
-                    <SelectItem value="PENDING">Menunggu Pembayaran</SelectItem>
-                    <SelectItem value="PENDING_PAYMENT">Menunggu Konfirmasi</SelectItem>
-                    <SelectItem value="SUCCESS">Lunas</SelectItem>
-                    <SelectItem value="FAILED">Gagal</SelectItem>
-                    <SelectItem value="EXPIRED">Kadaluarsa</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
+          <Tabs value={currentStatus} onValueChange={(value) => setCurrentStatus(value as PaymentStatus | "ALL" | "MANUAL_PENDING")} className="space-y-6">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="MANUAL_PENDING" className="flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                Konfirmasi Manual
+              </TabsTrigger>
+              <TabsTrigger value="PENDING">Menunggu Pembayaran</TabsTrigger>
+              <TabsTrigger value="SUCCESS">Lunas</TabsTrigger>
+              <TabsTrigger value="FAILED">Gagal</TabsTrigger>
+              <TabsTrigger value="EXPIRED">Kadaluarsa</TabsTrigger>
+            </TabsList>
 
-          {/* Orders Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Daftar Pesanan</CardTitle>
-            </CardHeader>
-            <CardContent>
+            {/* Search */}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="relative">
+                  <Search className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
+                  <Input
+                    placeholder="Cari berdasarkan invoice, nama, atau email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <TabsContent value={currentStatus}>
               {loading ? (
-                <div className="flex items-center justify-center py-8">
+                <div className="flex items-center justify-center py-12">
                   <Loader2 className="h-8 w-8 animate-spin" />
                 </div>
               ) : orders.length === 0 ? (
-                <div className="text-center py-8">
-                  <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <h3 className="mt-2 text-sm font-semibold text-gray-900">Tidak ada pesanan</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Belum ada pesanan yang ditemukan dengan filter saat ini.
-                  </p>
-                </div>
+                <Card>
+                  <CardContent className="flex items-center justify-center py-12">
+                    <div className="text-center">
+                      <h3 className="mb-2 text-lg font-semibold">Tidak ada pesanan</h3>
+                      <p className="text-muted-foreground">
+                        {searchTerm
+                          ? "Tidak ada pesanan yang sesuai dengan pencarian."
+                          : "Belum ada pesanan dengan status ini."}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
               ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Invoice</TableHead>
-                        <TableHead>Pembeli</TableHead>
-                        <TableHead>Event</TableHead>
-                        <TableHead>Tiket</TableHead>
-                        <TableHead>Total</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Tanggal</TableHead>
-                        <TableHead>Aksi</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {orders.map((order) => (
-                        <TableRow key={order.id}>
-                          <TableCell className="font-medium">
-                            {order.invoiceNumber}
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <p className="font-medium">
-                                {order.buyerInfo?.fullName || order.user.name}
+                <div className="space-y-4">
+                  {orders.map((order) => (
+                    <Card key={order.id}>
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-3 flex-1">
+                            <div className="flex items-center gap-3">
+                              <h3 className="text-lg font-semibold">
+                                #{order.invoiceNumber}
+                              </h3>
+                              {getStatusBadge(order.status, order.paymentMethod, order.details)}
+                            </div>
+                            <div className="grid gap-2 text-sm md:grid-cols-2">
+                              <p>
+                                <span className="font-medium">Pelanggan:</span>{" "}
+                                {order.buyerInfo?.fullName || order.user.name} ({order.buyerInfo?.email || order.user.email})
                               </p>
-                              <p className="text-sm text-muted-foreground">
-                                {order.buyerInfo?.email || order.user.email}
+                              <p>
+                                <span className="font-medium">Event:</span>{" "}
+                                {order.event.title}
+                              </p>
+                              <p>
+                                <span className="font-medium">Tanggal Pesanan:</span>{" "}
+                                {order.formattedCreatedAt || formatDate(order.createdAt)}
+                              </p>
+                              <p>
+                                <span className="font-medium">Metode Pembayaran:</span>{" "}
+                                {order.paymentMethod === "MANUAL_PAYMENT" ? "Pembayaran Manual" : order.paymentMethod}
+                              </p>
+                              <p>
+                                <span className="font-medium">Total:</span>{" "}
+                                <span className="font-semibold text-blue-600">
+                                  {formatPrice(order.amount)}
+                                </span>
                               </p>
                             </div>
-                          </TableCell>
-                          <TableCell>
-                            <p className="font-medium">{order.event.title}</p>
-                          </TableCell>
-                          <TableCell>
-                            {order.orderItems.map((item, index) => (
-                              <div key={item.id} className="text-sm">
-                                {item.ticketType.name} ({item.quantity}x)
-                                {index < order.orderItems.length - 1 && <br />}
-                              </div>
-                            ))}
-                          </TableCell>
-                          <TableCell className="font-medium">
-                            {formatPrice(order.amount)}
-                          </TableCell>
-                          <TableCell>
-                            {getStatusBadge(order.status)}
-                          </TableCell>
-                          <TableCell className="text-sm">
-                            {formatDate(order.createdAt)}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              {order.status === "PENDING_PAYMENT" && (
-                                <>
-                                  <Button
-                                    size="sm"
-                                    onClick={() => updateOrderStatus(order.id, "SUCCESS")}
-                                    disabled={processingOrderId === order.id}
-                                    className="bg-green-600 hover:bg-green-700"
-                                  >
-                                    {processingOrderId === order.id ? (
-                                      <Loader2 className="h-4 w-4 animate-spin" />
-                                    ) : (
-                                      <CheckCircle className="h-4 w-4" />
-                                    )}
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    onClick={() => updateOrderStatus(order.id, "FAILED")}
-                                    disabled={processingOrderId === order.id}
-                                  >
-                                    {processingOrderId === order.id ? (
-                                      <Loader2 className="h-4 w-4 animate-spin" />
-                                    ) : (
-                                      <XCircle className="h-4 w-4" />
-                                    )}
-                                  </Button>
-                                </>
-                              )}
+
+                            {/* Order Items */}
+                            <div className="space-y-1">
+                              <p className="font-medium text-sm">Tiket:</p>
+                              {order.orderItems.map((item) => (
+                                <p key={item.id} className="text-sm text-muted-foreground">
+                                  {item.ticketType.name} x {item.quantity} = {formatPrice(item.subtotal || (item.ticketType.price || 0) * item.quantity)}
+                                </p>
+                              ))}
                             </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                          </div>
+
+                          <div className="flex flex-col gap-2 ml-4">
+                            {currentStatus === "MANUAL_PENDING" && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  onClick={() => verifyManualPayment(order.id, "SUCCESS")}
+                                  disabled={processingOrderId === order.id}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  {processingOrderId === order.id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <CheckCircle className="h-4 w-4" />
+                                  )}
+                                  <span className="ml-2">Setujui</span>
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => verifyManualPayment(order.id, "FAILED", "Manual payment rejected by organizer")}
+                                  disabled={processingOrderId === order.id}
+                                >
+                                  {processingOrderId === order.id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <XCircle className="h-4 w-4" />
+                                  )}
+                                  <span className="ml-2">Tolak</span>
+                                </Button>
+                              </>
+                            )}
+                            {order.status === "SUCCESS" && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => generateQRCodes(order.id)}
+                                disabled={generatingQROrderId === order.id}
+                                className="border-blue-500 text-blue-600 hover:bg-blue-50"
+                              >
+                                {generatingQROrderId === order.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <QrCode className="h-4 w-4" />
+                                )}
+                                <span className="ml-2">Generate QR</span>
+                              </Button>
+                            )}
+                            <Button variant="outline" size="sm" asChild>
+                              <Link href={`/organizer/${organizerId}/orders/${order.id}`}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                Detail
+                              </Link>
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </TabsContent>
+          </Tabs>
 
           {/* Pagination */}
           {totalPages > 1 && (

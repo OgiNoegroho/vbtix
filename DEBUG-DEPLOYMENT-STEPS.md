@@ -28,7 +28,7 @@ Your `/api/test-db` endpoint is returning HTML instead of JSON, which suggests e
 3. Or manually trigger a redeploy in Vercel dashboard
 
 ### Step 2: Test the Health Endpoint First
-1. Go to: `https://vbtix.vercel.app/api/health`
+1. Go to: `https://vbticket.vercel.app/api/health`
 2. You should see a JSON response like:
 ```json
 {
@@ -55,7 +55,7 @@ If the health endpoint shows `DATABASE_URL_EXISTS: false`, you need to:
    DATABASE_URL=postgresql://postgres.PROJECT_REF:PASSWORD@aws-0-us-west-1.pooler.supabase.com:6543/postgres
    DIRECT_URL=postgresql://postgres:PASSWORD@db.PROJECT_REF.supabase.co:5432/postgres
    NEXTAUTH_SECRET=your-secret-here
-   NEXTAUTH_URL=https://vbtix.vercel.app
+   NEXTAUTH_URL=https://vbticket.vercel.app
    ```
 3. **Redeploy** after setting environment variables
 

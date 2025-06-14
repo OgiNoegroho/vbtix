@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { MailIcon, PlusCircleIcon, type LucideIcon } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
+import { Badge } from "~/components/ui/badge";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -21,6 +22,7 @@ export function NavMain({
     title: string;
     url: string;
     icon?: LucideIcon;
+    badge?: string | number;
   }[];
 }) {
   const pathname = usePathname();
@@ -58,15 +60,25 @@ export function NavMain({
                   asChild
                   className={cn(isActive && "bg-blue-700 text-white")}
                 >
-                  <Link href={item.url}>
-                    {item.icon && (
-                      <item.icon
-                        className={cn(
-                          isActive ? "text-white" : "text-white/70",
-                        )}
-                      />
+                  <Link href={item.url} className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      {item.icon && (
+                        <item.icon
+                          className={cn(
+                            isActive ? "text-white" : "text-white/70",
+                          )}
+                        />
+                      )}
+                      <span>{item.title}</span>
+                    </div>
+                    {item.badge && (
+                      <Badge
+                        variant="secondary"
+                        className="ml-auto bg-amber-500 text-amber-900 text-xs px-1.5 py-0.5"
+                      >
+                        {item.badge}
+                      </Badge>
                     )}
-                    <span>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

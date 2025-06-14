@@ -1,6 +1,7 @@
 import { prisma } from "~/server/db";
 import { organizerService } from "~/server/services/organizer.service";
 import { eventService } from "~/server/services/event.service";
+import { ticketService } from "~/server/services/ticket.service";
 import { Prisma, TicketStatus } from "@prisma/client";
 
 /**
@@ -107,11 +108,12 @@ export async function handleGetTicketTypeById(params: {
 
 /**
  * Create a new ticket type for an event
+ * Only allows ticket creation for PUBLISHED (approved) events
  */
 export async function handleCreateTicketType(params: {
   userId: string;
   eventId: string;
-  ticketTypeData: Prisma.TicketTypeCreateInput;
+  ticketTypeData: any; // Use any to avoid type conflicts with transformed data
 }) {
   const { userId, eventId, ticketTypeData } = params;
 
@@ -123,20 +125,38 @@ export async function handleCreateTicketType(params: {
     throw new Error("User is not an organizer");
   }
 
-  // Check if event exists and belongs to the organizer
-  const event = await eventService.findById(eventId);
-  if (!event) throw new Error("Event not found");
+  // CRITICAL: Validate event approval status and ownership using service layer
+  const validationResult = await ticketService.validateEventApprovalForTickets(
+    eventId,
+    organizer.id
+  );
 
-  if (event.organizerId !== organizer.id) {
-    throw new Error("Event does not belong to this organizer");
-  }
+  console.log("Event validation result:", validationResult);
+
+  // Prepare data for Prisma, ensuring datetime fields are properly handled
+  const prismaData: Prisma.TicketTypeCreateInput = {
+    name: ticketTypeData.name,
+    description: ticketTypeData.description || null,
+    price: ticketTypeData.price,
+    currency: ticketTypeData.currency || "IDR",
+    quantity: ticketTypeData.quantity,
+    maxPerPurchase: ticketTypeData.maxPerPurchase || 10,
+    isVisible: ticketTypeData.isVisible ?? true,
+    allowTransfer: ticketTypeData.allowTransfer ?? false,
+    ticketFeatures: ticketTypeData.ticketFeatures || null,
+    perks: ticketTypeData.perks || null,
+    // Convert datetime strings to Date objects for Prisma
+    earlyBirdDeadline: ticketTypeData.earlyBirdDeadline ? new Date(ticketTypeData.earlyBirdDeadline) : null,
+    saleStartDate: ticketTypeData.saleStartDate ? new Date(ticketTypeData.saleStartDate) : null,
+    saleEndDate: ticketTypeData.saleEndDate ? new Date(ticketTypeData.saleEndDate) : null,
+    event: { connect: { id: eventId } },
+  };
+
+  console.log("Creating ticket type with data:", JSON.stringify(prismaData, null, 2));
 
   // Create ticket type
   const ticketType = await prisma.ticketType.create({
-    data: {
-      ...ticketTypeData,
-      event: { connect: { id: eventId } },
-    },
+    data: prismaData,
   });
 
   return ticketType;

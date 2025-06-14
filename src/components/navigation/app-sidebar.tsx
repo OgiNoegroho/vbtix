@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import { useSession } from "next-auth/react";
 import {
   ArrowUpCircleIcon,
@@ -18,6 +17,7 @@ import {
   SettingsIcon,
   TicketIcon,
   UsersIcon,
+  SparklesIcon,
   type LucideIcon,
 } from "lucide-react";
 
@@ -25,6 +25,7 @@ import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
 import { NavDocuments } from "./nav-document";
+import { MagicCard } from "~/components/ui/magic-card";
 import {
   Sidebar,
   SidebarContent,
@@ -124,33 +125,33 @@ const getOrganizerNavigationData = (
       url: `/organizer/${organizerId}/settings`,
       icon: SettingsIcon,
     },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: HelpCircleIcon,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: SearchIcon,
-    },
+    // {
+    //   title: "Get Help",
+    //   url: "#",
+    //   icon: HelpCircleIcon,
+    // },
+    // {
+    //   title: "Search",
+    //   url: "#",
+    //   icon: SearchIcon,
+    // },
   ],
   documents: [
-    {
-      name: "Sales Reports",
-      url: `/organizer/${organizerId}/reports/sales`,
-      icon: DatabaseIcon,
-    },
-    {
-      name: "Attendee Lists",
-      url: `/organizer/${organizerId}/reports/attendees`,
-      icon: ClipboardListIcon,
-    },
-    {
-      name: "Inventory",
-      url: `/organizer/${organizerId}/inventory`,
-      icon: FileIcon,
-    },
+    // {
+    //   name: "Sales Reports",
+    //   url: `/organizer/${organizerId}/reports/sales`,
+    //   icon: DatabaseIcon,
+    // },
+    // {
+    //   name: "Attendee Lists",
+    //   url: `/organizer/${organizerId}/reports/attendees`,
+    //   icon: ClipboardListIcon,
+    // },
+    // {
+    //   name: "Inventory",
+    //   url: `/organizer/${organizerId}/inventory`,
+    //   icon: FileIcon,
+    // },
   ],
 });
 
@@ -185,61 +186,59 @@ export function AppSidebar({
   ): data is OrganizerNavigationData => {
     return "documents" in data;
   };
-
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="border-b border-sidebar-border/50">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className={
-                role === "admin"
-                  ? "data-[slot=sidebar-menu-button]:h-auto data-[slot=sidebar-menu-button]:min-h-[3.5rem] data-[slot=sidebar-menu-button]:!p-0 data-[slot=sidebar-menu-button]:pl-0"
-                  : "data-[slot=sidebar-menu-button]:!p-1.5"
-              }
+            <MagicCard 
+              className="p-0 border-0 bg-transparent"
+              gradientColor="rgba(59, 130, 246, 0.1)"
             >
-              {role === "admin" ? (
-                <a
-                  href="/admin/dashboard"
-                  className="ml-0 flex items-center gap-0 pl-0"
-                >
-                  <div className="ml-0 flex items-center pl-0">
-                    <div className="relative ml-0">
-                      <Image
-                        src="/desain_logo.png"
-                        alt="VBTix Logo"
-                        width={96}
-                        height={96}
-                        className="object-contain"
-                        priority
+              <SidebarMenuButton
+                asChild                className={
+                  role === "admin"
+                    ? "data-[slot=sidebar-menu-button]:h-auto data-[slot=sidebar-menu-button]:min-h-[6rem] data-[slot=sidebar-menu-button]:!p-8 hover:bg-sidebar-accent/50 transition-all duration-200"
+                    : "data-[slot=sidebar-menu-button]:h-auto data-[slot=sidebar-menu-button]:min-h-[5.5rem] data-[slot=sidebar-menu-button]:!p-6 hover:bg-sidebar-accent/50 transition-all duration-200"
+                }
+              >
+                {role === "admin" ? (                  <a
+                    href="/admin/dashboard"
+                    className="flex items-center justify-center w-full"
+                  >
+                    <div className="relative w-full flex justify-center">
+                      <img 
+                        src="/desain_logo.png" 
+                        alt="VBTix Logo" 
+                        className="h-32 w-auto object-contain max-w-full scale-110"
                       />
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full animate-pulse" />
                     </div>
-                    <span className="-ml-1 flex h-10 items-center text-xl font-semibold text-white">
-                      ADMIN
-                    </span>
-                  </div>
-                </a>
-              ) : (
-                <a href={`/organizer/${organizerId}`}>
-                  <ArrowUpCircleIcon className="h-5 w-5" />
-                  <span className="text-base font-semibold">
-                    VBTix Organizer
-                  </span>
-                </a>
-              )}
-            </SidebarMenuButton>
+                  </a>
+                ) : (
+                  <a href={`/organizer/${organizerId}`} className="flex items-center justify-center w-full">                    <div className="relative w-full flex justify-center">
+                      <img 
+                        src="/desain_logo.png" 
+                        alt="VBTix Logo" 
+                        className="h-28 w-auto object-contain max-w-full scale-110"
+                      />
+                      <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gradient-to-r from-blue-500 to-green-400 rounded-full animate-pulse" />
+                    </div>
+                  </a>
+                )}
+              </SidebarMenuButton>
+            </MagicCard>
           </SidebarMenuItem>
         </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={navData.navMain} />
-        {role === "organizer" && hasDocuments(navData) && (
-          <NavDocuments items={navData.documents} />
-        )}
-        <NavSecondary items={navData.navSecondary} className="mt-auto" />
+      </SidebarHeader>      <SidebarContent className="px-2 py-4">        <div className="space-y-2">
+          <NavMain items={navData.navMain} />
+          
+        </div>
+        <div className="mt-auto pt-6">
+          <NavSecondary items={navData.navSecondary} className="mt-auto" />
+        </div>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-sidebar-border/50 p-2">
         <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>

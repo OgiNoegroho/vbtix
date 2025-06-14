@@ -52,7 +52,7 @@ export default function EmailTemplatesPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold">📧 Email Templates</h1>
         <p className="text-muted-foreground mt-2">
-          Preview and test email templates for VBTix
+          Preview and test email templates for VBTicket
         </p>
       </div>
 
@@ -150,7 +150,7 @@ export default function EmailTemplatesPage() {
                   <div>
                     <Badge variant="secondary">Template Features</Badge>
                     <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                      <li>• Professional VBTix branding</li>
+                      <li>• Professional VBTicket branding</li>
                       <li>• Clear verification button</li>
                       <li>• Fallback verification link</li>
                       <li>• 24-hour expiration notice</li>
@@ -226,11 +226,11 @@ export default function EmailTemplatesPage() {
               </div>
               <div>
                 <Label className="font-medium">Reply To</Label>
-                <p className="text-muted-foreground">support@vbtix.com</p>
+                <p className="text-muted-foreground">support@vbticket.com</p>
               </div>
               <div>
                 <Label className="font-medium">Company Name</Label>
-                <p className="text-muted-foreground">VBTix</p>
+                <p className="text-muted-foreground">VBTicket</p>
               </div>
             </div>
           </CardContent>

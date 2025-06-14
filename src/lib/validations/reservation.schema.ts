@@ -4,7 +4,6 @@ import { z } from "zod";
  * Enum for reservation status matching the Prisma schema
  */
 export const ReservationStatus = z.enum([
-  "PENDING",
   "ACTIVE",
   "EXPIRED",
   "CONVERTED",

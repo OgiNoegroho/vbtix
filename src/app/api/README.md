@@ -1,6 +1,6 @@
 # API Structure
 
-This directory contains the API routes for the VBTix application. The API is organized into three main groups:
+This directory contains the API routes for the VBTicket application. The API is organized into three main groups:
 
 ## 1. Admin API (`/api/admin/`)
 

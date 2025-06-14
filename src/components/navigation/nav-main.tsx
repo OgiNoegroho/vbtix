@@ -2,12 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MailIcon, PlusCircleIcon, type LucideIcon } from "lucide-react";
+import { 
+  MailIcon, 
+  ChevronRightIcon,
+  type LucideIcon 
+} from "lucide-react";
 
 import { Button } from "~/components/ui/button";
+import { Badge } from "~/components/ui/badge";
+import { MagicCard } from "~/components/ui/magic-card";
 import {
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -16,61 +23,92 @@ import { cn } from "~/lib/utils";
 
 export function NavMain({
   items,
-  quickCreateLabel = "Quick Create",
 }: {
   items: {
     title: string;
     url: string;
     icon?: LucideIcon;
+    badge?: string | number;
   }[];
-  quickCreateLabel?: string;
 }) {
   const pathname = usePathname();
 
   return (
     <SidebarGroup>
-      <SidebarGroupContent className="flex flex-col gap-2">
-        <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-2">
-            <SidebarMenuButton
-              tooltip={quickCreateLabel}
-              className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
-            >
-              <PlusCircleIcon />
-              <span>{quickCreateLabel}</span>
-            </SidebarMenuButton>
-            <Button
-              size="icon"
-              className="h-9 w-9 shrink-0 border-white/30 bg-white/20 text-white group-data-[collapsible=icon]:opacity-0 hover:bg-white/30 hover:text-white"
-              variant="outline"
-            >
-              <MailIcon />
-              <span className="sr-only">Inbox</span>
-            </Button>
-          </SidebarMenuItem>
-        </SidebarMenu>
-        <SidebarMenu>
+      <SidebarGroupLabel className="text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-2">
+        Navigation
+      </SidebarGroupLabel>      <SidebarGroupContent className="space-y-1">
+        {/* Main Navigation */}
+        <SidebarMenu className="space-y-1">
           {items.map((item) => {
             const isActive = pathname === item.url;
             const Icon = item.icon;
 
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  asChild
-                  className={cn(isActive && "bg-blue-700 text-white")}
+                <MagicCard 
+                  className={cn(
+                    "p-0 border-0 transition-all duration-200",
+                    isActive 
+                      ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20" 
+                      : "bg-transparent hover:bg-sidebar-accent/50"
+                  )}
+                  gradientColor={isActive ? "rgba(59, 130, 246, 0.2)" : "rgba(255, 255, 255, 0.05)"}
                 >
-                  <Link href={item.url}>
-                    {Icon && (
-                      <Icon
-                        className={cn(
-                          isActive ? "text-white" : "text-white/70"
-                        )}
-                      />
+                  <SidebarMenuButton
+                    asChild
+                    className={cn(
+                      "w-full justify-start gap-3 bg-transparent border-0 transition-all duration-200 group relative",
+                      isActive 
+                        ? "text-blue-600 font-semibold" 
+                        : "text-sidebar-foreground hover:text-sidebar-foreground"
                     )}
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
+                  >
+                    <Link href={item.url}>
+                      {/* Active indicator */}
+                      {isActive && (
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded-r-full" />
+                      )}
+                      
+                      {Icon && (
+                        <div className={cn(
+                          "p-1.5 rounded-lg transition-all duration-200",
+                          isActive 
+                            ? "bg-gradient-to-r from-blue-500 to-purple-500" 
+                            : "bg-sidebar-accent/50 group-hover:bg-sidebar-accent"
+                        )}>
+                          <Icon className={cn(
+                            "h-4 w-4 transition-colors",
+                            isActive ? "text-white" : "text-sidebar-foreground/70"
+                          )} />
+                        </div>
+                      )}
+                      
+                      <span className="flex-1">{item.title}</span>
+                      
+                      {item.badge && (
+                        <Badge 
+                          variant={isActive ? "default" : "secondary"} 
+                          className={cn(
+                            "text-xs px-2 py-0.5 font-medium",
+                            isActive 
+                              ? "bg-white/20 text-blue-700 border-blue-200" 
+                              : "bg-sidebar-accent text-sidebar-foreground/70"
+                          )}
+                        >
+                          {item.badge}
+                        </Badge>
+                      )}
+                      
+                      <ChevronRightIcon className={cn(
+                        "h-4 w-4 transition-all duration-200",
+                        isActive 
+                          ? "opacity-100 translate-x-0" 
+                          : "opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0"
+                      )} />
+                    </Link>
+                  </SidebarMenuButton>
+                </MagicCard>
               </SidebarMenuItem>
             );
           })}

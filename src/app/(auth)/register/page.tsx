@@ -2,9 +2,22 @@ import { RegisterForm } from "~/components/auth/register-form"
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <RegisterForm />
+    <div className="fixed inset-0 w-full h-full bg-gradient-to-br from-background via-muted/20 to-background overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
+      <div className="absolute top-0 left-0 w-full h-full">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000" />
+      </div>
+      
+      {/* Main Content - Left Aligned Layout */}
+      <div className="relative z-10 flex h-full w-full items-center justify-start pl-8 lg:pl-16">
+        <div className="flex w-auto max-w-lg h-auto max-h-[600px] bg-card/80 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-border/20">
+          {/* Register Form Container */}
+          <div className="w-96 p-6 flex items-center justify-center bg-gradient-to-br from-background/95 to-muted/30 backdrop-blur-sm">
+            <RegisterForm />
+          </div>
+        </div>
       </div>
     </div>
   )

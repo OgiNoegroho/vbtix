@@ -47,7 +47,6 @@ export const eventService = {
       throw error;
     }
   },
-
   /**
    * Mencari semua event dengan filter dan pagination
    */
@@ -58,6 +57,7 @@ export const eventService = {
     organizerId?: string;
     search?: string;
     featured?: boolean;
+    isAdminView?: boolean; // Add this parameter to distinguish admin vs public views
   }) {
     const {
       page = 1,
@@ -66,6 +66,7 @@ export const eventService = {
       organizerId,
       search,
       featured,
+      isAdminView = false,
     } = params;
     const skip = (page - 1) * limit;
 
@@ -81,10 +82,14 @@ export const eventService = {
       if (status) {
         where.status = status;
         console.log("Added status filter:", status);
+      } else if (!isAdminView && !organizerId) {
+        // Only for public buyer pages (not admin and not organizer specific),
+        // default to published events when no status is specified
+        where.status = EventStatus.PUBLISHED;
+        console.log("Public view: Added default PUBLISHED status filter");
       } else {
-        // When no status is provided, include all statuses
-        console.log("No status filter provided, including all statuses");
-        // Don't add any status filter to the where clause
+        // For admin view or organizer specific view, show all statuses when no filter is specified
+        console.log("Admin/Organizer view: No status filter applied, showing all statuses");
       }
 
       if (organizerId) {
@@ -102,14 +107,6 @@ export const eventService = {
 
       if (featured !== undefined) {
         where.featured = featured;
-      }
-
-      // For buyer-facing endpoints, only show published events
-      // But don't add this filter for admin endpoints when no status is specified
-      if (status === undefined && !organizerId) {
-        // For public buyer pages (no organizerId),
-        // if no status filter is specified, default to published events
-        where.status = EventStatus.PUBLISHED;
       }
 
       console.log("Query where condition:", JSON.stringify(where, null, 2));

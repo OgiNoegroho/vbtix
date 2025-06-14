@@ -53,7 +53,7 @@ export async function sendTicketEmail(data: TicketEmailData) {
     const emailText = generateTicketEmailText(data);
 
     const result = await resend.emails.send({
-      from: env.EMAIL_FROM || "no-reply@vbtix.com",
+      from: env.EMAIL_FROM || "no-reply@vbticket.com",
       to: data.to,
       subject: `Tiket Anda untuk ${data.event.title} - ${data.order.invoiceNumber}`,
       html: emailHtml,
@@ -174,7 +174,7 @@ function generateTicketEmailHtml(data: TicketEmailData): string {
 
     <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
       <p style="color: #6b7280; font-size: 14px;">
-        Terima kasih telah menggunakan VBTix!<br>
+        Terima kasih telah menggunakan VBTicket!<br>
         Jika ada pertanyaan, silakan hubungi customer service kami.
       </p>
     </div>
@@ -255,7 +255,7 @@ WhatsApp: ${data.buyerInfo.whatsapp}
     : ""
 }
 
-Terima kasih telah menggunakan VBTix!
+Terima kasih telah menggunakan VBTicket!
 Jika ada pertanyaan, silakan hubungi customer service kami.
   `;
 }

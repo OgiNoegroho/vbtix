@@ -125,15 +125,45 @@ export async function POST(
       return NextResponse.json({
         success: true,
         data: ticketType,
+        message: "Ticket type created successfully",
       });
     } catch (validationError: any) {
+      // Handle Zod validation errors
+      if (validationError.errors) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Validation error",
+            details: validationError.errors,
+          },
+          { status: 400 },
+        );
+      }
+
+      // Handle business logic errors (event approval, authorization, etc.)
+      const errorMessage = validationError.message || "Failed to create ticket type";
+
+      // Determine appropriate status code based on error type
+      let statusCode = 500;
+      if (errorMessage.includes("not found")) {
+        statusCode = 404;
+      } else if (errorMessage.includes("not an organizer") ||
+                 errorMessage.includes("does not belong")) {
+        statusCode = 403;
+      } else if (errorMessage.includes("approval") ||
+                 errorMessage.includes("status") ||
+                 errorMessage.includes("draft") ||
+                 errorMessage.includes("pending") ||
+                 errorMessage.includes("rejected")) {
+        statusCode = 422; // Unprocessable Entity
+      }
+
       return NextResponse.json(
         {
           success: false,
-          error: "Validation error",
-          details: validationError.errors || validationError,
+          error: errorMessage,
         },
-        { status: 400 },
+        { status: statusCode },
       );
     }
   } catch (error: any) {

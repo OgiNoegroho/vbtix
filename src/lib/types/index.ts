@@ -74,6 +74,10 @@ export interface Ticket {
   transactionId: string;
   userId: string;
   qrCode: string;
+  qrCodeImageUrl?: string | null;
+  qrCodeData?: string | null;
+  qrCodeGeneratedAt?: string | null;
+  qrCodeStatus: QRCodeStatus;
   imageUrl?: string | null;
   imagePublicId?: string | null;
   status: TicketStatus;
@@ -90,6 +94,14 @@ export type TicketStatus =
   | "CANCELLED"
   | "EXPIRED"
   | "REFUNDED";
+
+// Enum for QR code status
+export type QRCodeStatus =
+  | "PENDING"
+  | "GENERATED"
+  | "ACTIVE"
+  | "USED"
+  | "EXPIRED";
 
 // Transaction type
 export interface Transaction {

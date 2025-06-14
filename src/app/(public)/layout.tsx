@@ -8,9 +8,9 @@ export default function BuyerLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-background min-h-screen">
+    <div className="min-h-screen bg-gradient-mesh">
       <BuyerTopNavbar />
-      <main>{children}</main>
+      <main className="relative">{children}</main>
     </div>
   );
 }

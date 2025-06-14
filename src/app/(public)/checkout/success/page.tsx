@@ -42,7 +42,7 @@ export default function CheckoutSuccessPage() {
     const fetchOrderData = async () => {
       try {
         // Get session ID from localStorage for guest access
-        const sessionId = localStorage.getItem("vbtix_session_id");
+        const sessionId = localStorage.getItem("vbticket_session_id");
 
         // Build URL with session ID for guest access
         const url = sessionId
@@ -357,7 +357,7 @@ export default function CheckoutSuccessPage() {
                   </p>
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4 text-gray-400" />
-                    <span>support@vbtix.com</span>
+                    <span>support@vbticket.com</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <MessageCircle className="h-4 w-4 text-gray-400" />

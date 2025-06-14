@@ -1,6 +1,7 @@
 import { prisma } from "~/server/db";
 import { PaymentStatus } from "@prisma/client";
 import { env } from "~/env";
+import { generateTransactionQRCodes } from "~/server/services/ticket-qr.service";
 
 // Import both Xendit and Mock payment services
 import {
@@ -72,12 +73,18 @@ export async function handleInitiateCheckout(params: {
 
   // Handle manual payment
   if (paymentMethod === "MANUAL_PAYMENT") {
-    // Update order status to PENDING_PAYMENT for manual approval
+    // Update order status to PENDING for manual approval
+    // We'll use the details field to mark this as awaiting manual verification
     const updatedOrder = await prisma.transaction.update({
       where: { id: orderId },
       data: {
         paymentMethod: "MANUAL_PAYMENT",
-        status: "PENDING_PAYMENT",
+        status: "PENDING",
+        details: {
+          type: "manual_payment",
+          awaitingVerification: true,
+          submittedAt: new Date().toISOString(),
+        },
       },
     });
 
@@ -310,8 +317,14 @@ export async function handlePaymentCallback(params: {
           },
         });
 
-        // Note: E-tickets are now handled within the Ticket model
-        // No separate eTicket creation needed
+        // Generate QR codes for all tickets in the transaction
+        try {
+          const qrResult = await generateTransactionQRCodes(actualOrderId);
+          console.log(`QR code generation result: ${qrResult.generatedCount} generated, errors:`, qrResult.errors);
+        } catch (qrError) {
+          console.error("Error generating QR codes:", qrError);
+          // Don't fail the payment process if QR generation fails
+        }
       }
 
       return updated;

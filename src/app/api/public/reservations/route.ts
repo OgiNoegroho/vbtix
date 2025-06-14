@@ -25,10 +25,25 @@ export async function POST(request: NextRequest) {
         const validatedData = bulkReservationSchema.parse(body);
 
         // Create bulk reservations
+        console.log("Creating bulk reservations with data:", validatedData);
         const result = await handleBulkCreateReservations({
           sessionId: validatedData.sessionId,
           reservations: validatedData.reservations,
           expirationMinutes: validatedData.expirationMinutes,
+        });
+
+        console.log("Bulk reservation result:", {
+          totalCreated: result.totalCreated,
+          totalFailed: result.totalFailed,
+          successfulCount: result.successful?.length,
+          failedCount: result.failed?.length,
+          successful: result.successful?.map(r => ({
+            id: r.id,
+            status: r.status,
+            expiresAt: r.expiresAt,
+            ticketTypeId: r.ticketTypeId,
+            quantity: r.quantity
+          }))
         });
 
         return NextResponse.json({
@@ -135,10 +150,15 @@ export async function GET(request: NextRequest) {
         limit: validatedParams.limit,
       });
 
+      // Ensure we return an array even if no reservations found
+      const reservations = result.reservations || [];
+
+      console.log(`Found ${reservations.length} active reservations for session ${validatedParams.sessionId}`);
+
       return NextResponse.json({
         success: true,
-        data: result.reservations,
-        meta: result.meta,
+        data: reservations,
+        meta: result.meta || { total: 0, page: 1, limit: 10 },
       });
     } catch (validationError: any) {
       console.error("GET reservations validation error:", validationError);

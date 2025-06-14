@@ -39,15 +39,15 @@ export async function GET(request: NextRequest) {
     }
 
     // Get query parameters
-    const searchParams = request.nextUrl.searchParams;
+    const searchParams = request.nextUrl.searchParams;    // Parse and validate query parameters
+    const rawParams = {
+      startDate: searchParams.get("startDate") || undefined,
+      endDate: searchParams.get("endDate") || undefined,
+      eventId: searchParams.get("eventId") || undefined,
+      groupBy: searchParams.get("groupBy") || undefined,
+    };
 
-    // Parse and validate query parameters
-    const parsedParams = salesQuerySchema.safeParse({
-      startDate: searchParams.get("startDate"),
-      endDate: searchParams.get("endDate"),
-      eventId: searchParams.get("eventId"),
-      groupBy: searchParams.get("groupBy"),
-    });
+    const parsedParams = salesQuerySchema.safeParse(rawParams);
 
     if (!parsedParams.success) {
       return NextResponse.json(
